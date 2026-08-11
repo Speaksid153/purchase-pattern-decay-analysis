@@ -1,0 +1,32 @@
+node_modules/
+dist/
+build/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+
+# Local tooling
+.vscode/
+.idea/
+*.swp
+*.tmp
+tmp/
+
+# Local runtime output
+logs/
+*.pid
+
+# Large ML/data artifacts are restored separately for local runs and deployment.
+/data/
+/models/

@@ -1,0 +1,32 @@
+services:
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      API_HOST: 0.0.0.0
+      API_PORT: 5001
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost}
+      API_AUTH_TOKEN: ${API_AUTH_TOKEN:-}
+    volumes:
+      - ${SERVING_CACHE_DIR:?Set SERVING_CACHE_DIR to the verified serving-cache directory}:/app/data/serving:ro
+    expose:
+      - "5001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; assert urlopen('http://127.0.0.1:5001/api/health').status == 200"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "${DASHBOARD_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped

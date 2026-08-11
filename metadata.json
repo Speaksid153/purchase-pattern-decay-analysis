@@ -1,0 +1,5 @@
+{
+  "name": "Early Churn Predictor",
+  "description": "Enterprise early churn prediction and retention platform featuring portfolio risk analytics, customer SHAP explainability, and model comparison.",
+  "requestFramePermissions": []
+}

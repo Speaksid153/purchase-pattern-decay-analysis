@@ -1,0 +1,225 @@
+{
+  "dataset": "instacart",
+  "scope": {
+    "orders": 3421083,
+    "users": 206209,
+    "behavior_orders_with_baskets": 3346083,
+    "test_orders_without_baskets": 75000,
+    "eval_set_counts": {
+      "prior": 3214874,
+      "train": 131209,
+      "test": 75000
+    }
+  },
+  "sequence_depth": {
+    "orders_per_user": {
+      "count": 206209,
+      "mean": 16.590367054784224,
+      "median": 10.0,
+      "p25": 6.0,
+      "p75": 20.0,
+      "p90": 38.0,
+      "p95": 52.0,
+      "max": 100.0
+    },
+    "observed_span_days": {
+      "count": 206209,
+      "mean": 167.07127234989744,
+      "median": 145.0,
+      "p25": 81.0,
+      "p75": 248.0,
+      "p90": 332.0,
+      "p95": 354.0,
+      "max": 365.0
+    },
+    "users_3plus_orders": 206209,
+    "users_5plus_orders": 182223,
+    "users_10plus_orders": 110728
+  },
+  "behavior_distributions": {
+    "days_since_prior_order": {
+      "count": 3139874,
+      "mean": 10.972287422998502,
+      "median": 7.0,
+      "p25": 4.0,
+      "p75": 15.0,
+      "p90": 30.0,
+      "p95": 30.0,
+      "max": 30.0
+    },
+    "item_count": {
+      "count": 3346083,
+      "mean": 10.10707325550502,
+      "median": 8.0,
+      "p25": 5.0,
+      "p75": 14.0,
+      "p90": 20.0,
+      "p95": 25.0,
+      "max": 145.0
+    },
+    "reorder_ratio": {
+      "count": 3346083,
+      "mean": 0.5988126253578115,
+      "median": 0.6666666666666666,
+      "p25": 0.3333333333333333,
+      "p75": 0.9032258064516128,
+      "p90": 1.0,
+      "p95": 1.0,
+      "max": 1.0
+    },
+    "distinct_department_count": {
+      "count": 3346083,
+      "mean": 4.741839637570258,
+      "median": 4.0,
+      "p25": 3.0,
+      "p75": 6.0,
+      "p90": 8.0,
+      "p95": 9.0,
+      "max": 18.0
+    },
+    "gap_ratio_to_prior_avg": {
+      "count": 2724527,
+      "mean": 1.0983894531666523,
+      "median": 0.8780487804878049,
+      "p25": 0.5217391304347826,
+      "p75": 1.3529411764705883,
+      "p90": 2.0610687022900764,
+      "p95": 2.702702702702702,
+      "max": 90.0
+    },
+    "basket_size_ratio_to_prior_avg": {
+      "count": 2724527,
+      "mean": 1.0468440821977993,
+      "median": 0.9525547445255472,
+      "p25": 0.649658200843987,
+      "p75": 1.3075268817204302,
+      "p90": 1.7333333333333334,
+      "p95": 2.076923076923077,
+      "max": 40.0
+    },
+    "reorder_ratio_delta_from_prior_avg": {
+      "count": 2724527,
+      "mean": 0.17131009860977356,
+      "median": 0.1853509585652442,
+      "p25": 0.0248677248677248,
+      "p75": 0.32924395892873454,
+      "p90": 0.4738095238095238,
+      "p95": 0.5691558441558442,
+      "max": 1.0
+    },
+    "department_count_ratio_to_prior_avg": {
+      "count": 2724527,
+      "mean": 1.0272929772461559,
+      "median": 1.0,
+      "p25": 0.7272727272727273,
+      "p75": 1.2564102564102564,
+      "p90": 1.5652173913043477,
+      "p95": 1.8,
+      "max": 13.0
+    }
+  },
+  "label_feasibility": {
+    "valid_prediction_rows": 2724527,
+    "future_30d_gap_rows": 250804,
+    "future_30d_gap_rate": 0.09205414371008253,
+    "future_2x_prior_avg_gap_rows": 319500,
+    "future_2x_prior_avg_gap_rate": 0.11726806157545878
+  },
+  "future_gap_feature_comparison": {
+    "days_since_prior_order": {
+      "normal_mean": 9.377995434412018,
+      "future_gap_mean": 18.386042487360648,
+      "normal_median": 7.0,
+      "future_gap_median": 18.0
+    },
+    "gap_ratio_to_prior_avg": {
+      "normal_mean": 1.073628822040075,
+      "future_gap_mean": 1.342607817755456,
+      "normal_median": 0.8571428571428572,
+      "future_gap_median": 1.0344827586206895
+    },
+    "item_count": {
+      "normal_mean": 10.145007747431706,
+      "future_gap_mean": 9.597163522112885,
+      "normal_median": 8.0,
+      "future_gap_median": 8.0
+    },
+    "basket_size_ratio_to_prior_avg": {
+      "normal_mean": 1.0469673371427755,
+      "future_gap_mean": 1.0456283974708744,
+      "normal_median": 0.9550561797752808,
+      "future_gap_median": 0.9310344827586208
+    },
+    "reorder_ratio": {
+      "normal_mean": 0.6791059421258311,
+      "future_gap_mean": 0.5576620678205482,
+      "normal_median": 0.7333333333333333,
+      "future_gap_median": 0.5555555555555556
+    },
+    "reorder_ratio_delta_from_prior_avg": {
+      "normal_mean": 0.1674974265611206,
+      "future_gap_mean": 0.20891513895286973,
+      "normal_median": 0.1833333333333333,
+      "future_gap_median": 0.21148152931100114
+    },
+    "distinct_department_count": {
+      "normal_mean": 4.742243169506044,
+      "future_gap_mean": 4.627537838311989,
+      "normal_median": 4.0,
+      "future_gap_median": 4.0
+    },
+    "department_count_ratio_to_prior_avg": {
+      "normal_mean": 1.0276512950506698,
+      "future_gap_mean": 1.0237588270956952,
+      "normal_median": 1.0,
+      "future_gap_median": 0.9803921568627452
+    }
+  },
+  "future_gap_lifts": {
+    "top_decile_gap_ratio": {
+      "threshold": 2.0610687022900764,
+      "baseline_future_gap_rate": 0.09205414371008253,
+      "segment_future_gap_rate": 0.13651240955190583,
+      "lift": 1.4829577903830293,
+      "segment_rows": 272532
+    },
+    "bottom_decile_basket_ratio": {
+      "threshold": 0.4098360655737705,
+      "baseline_future_gap_rate": 0.09205414371008253,
+      "segment_future_gap_rate": 0.10819934393506865,
+      "lift": 1.175388087643661,
+      "segment_rows": 272534
+    },
+    "bottom_decile_reorder_delta": {
+      "threshold": -0.1509085081585081,
+      "baseline_future_gap_rate": 0.09205414371008253,
+      "segment_future_gap_rate": 0.09084502648163169,
+      "lift": 0.9868651515323541,
+      "segment_rows": 272453
+    },
+    "bottom_decile_department_ratio": {
+      "threshold": 0.5,
+      "baseline_future_gap_rate": 0.09205414371008253,
+      "segment_future_gap_rate": 0.11140326400366324,
+      "lift": 1.2101928225471228,
+      "segment_rows": 279534
+    }
+  },
+  "top_departments": {
+    "produce": 9888378,
+    "dairy eggs": 5631067,
+    "snacks": 3006412,
+    "beverages": 2804175,
+    "frozen": 2336858,
+    "pantry": 1956819,
+    "bakery": 1225181,
+    "canned goods": 1114857,
+    "deli": 1095540,
+    "dry goods pasta": 905340,
+    "household": 774652,
+    "meat seafood": 739238,
+    "breakfast": 739069,
+    "personal care": 468693,
+    "babies": 438743
+  }
+}

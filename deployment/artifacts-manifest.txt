@@ -1,0 +1,15 @@
+# Required by scripts/api_server.py. Restore each file at its path relative to the project root.
+# Verify SHA-256 before starting the API. Artifact hosting is intentionally external to Git;
+# set ARTIFACT_SOURCE in your deployment runbook to a versioned, access-controlled store.
+
+data/processed/instacart/predictions/leading_xgboost_time_proxy_test_predictions.csv | 58.3 MiB | SHA256 775830398049BC3F222F167BF6FA0AD0C9F29CE976BABB65856504BC9E46CA72 | served portfolio/customer scores
+data/processed/instacart/predictions/leading_xgboost_time_proxy_test_shap_values.pkl | 184.6 MiB | SHA256 30EDC6736408988194EBEECE1897F6329E9F8E4D9C2E7153D0EB1A3CB00300F1 | served model explanations
+data/processed/instacart/orders_clean.csv | 157.9 MiB | SHA256 E6988A0EF7016232346FE39E6F06EAB506219B05010DB1263019A555DAEE193C | served order history
+data/processed/instacart/predictions/phase4_validation_predictions.csv | 43.6 MiB | SHA256 A04E7FAB71C2B34C584116655D8D716521885FEF9E35B829C87E6F7905E9C70A | retained experiment artifact
+data/processed/instacart/predictions/phase4_test_predictions.csv | 41.2 MiB | SHA256 0DCCE35B69E2170B24930CE9DEFDF0D669D53B8C75CE6233114740AB6622C463 | retained experiment artifact
+data/processed/instacart/labels/instacart_phase2_decay_labels.csv | 959.3 MiB | SHA256 163C1FD2DD6244C8DD8E4D4496A597446ABEEFC8041C24007888C8CFED381E7F | evaluation metadata
+
+# Required at normal API runtime. Generate offline with: py scripts/build_serving_cache.py
+data/serving/portfolio.sqlite | 3.2 MiB | SHA256 71A77A69FEF69272DB89EBD87A1B209E35045D782D48970A6D7DD00ED356B77B | indexed portfolio summary and customer cohorts
+data/serving/customer_detail.sqlite | 136.9 MiB | SHA256 3A2D620DA3DAE6FF6DEC2609D12D0EB94C0BE667D1173228397B4FBB60CA06B1 | serialized customer detail payloads
+data/serving/model_metrics.json | 537 bytes | SHA256 08FE37BA8127699B1265017BBEA06AC356CEE70FA016FFF5D95F01910F3133EA | deployed scorer evaluation metrics

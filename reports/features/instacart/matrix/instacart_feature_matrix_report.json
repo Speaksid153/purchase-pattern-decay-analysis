@@ -1,0 +1,58 @@
+{
+  "source_counts": {
+    "leading_rows": 2489335,
+    "baseline_rows": 2489335,
+    "target_rows": 2489335,
+    "feature_matrix_rows": 2489335,
+    "predictor_columns": 45,
+    "leading_predictor_columns": 38,
+    "baseline_predictor_columns": 7
+  },
+  "quality_checks": {
+    "duplicate_user_order_rows": 0,
+    "forbidden_predictor_columns": [],
+    "null_rates_top_15": {
+      "purchase_frequency_slope_last3": 0.042884545470979196,
+      "latest_gap_ratio_to_previous_gap": 0.022549797435861385,
+      "reorder_ratio_recent3_ratio_to_prior": 0.006497317556696869,
+      "current_gap_ratio_to_historical_median": 0.0,
+      "current_gap_gt_1_5x_historical_median": 0.0,
+      "gap_slope_last3": 0.0,
+      "current_gap_gt_2x_historical_median": 0.0,
+      "previous_gap_days": 0.0,
+      "prior_avg_gap_days_feature": 0.0,
+      "latest_gap_ratio_to_prior_avg": 0.0,
+      "gap_acceleration_1_5x_flag": 0.0,
+      "item_count_recent3_avg": 0.0,
+      "historical_median_gap_days_feature": 0.0,
+      "item_count_prior_to_current_avg": 0.0,
+      "item_count_recent3_ratio_to_prior": 0.0
+    }
+  },
+  "split_summary": [
+    {
+      "split": "test",
+      "rows": 372458,
+      "positive_rows": 66538,
+      "positive_rate": 0.1786456459520268
+    },
+    {
+      "split": "train",
+      "rows": 1742232,
+      "positive_rows": 311148,
+      "positive_rate": 0.17859159974102187
+    },
+    {
+      "split": "validation",
+      "rows": 374645,
+      "positive_rows": 67238,
+      "positive_rate": 0.17947123276701946
+    }
+  ],
+  "outputs": {
+    "feature_matrix_pickle": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_feature_matrix.pkl",
+    "feature_matrix_sample_csv": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_feature_matrix_sample.csv",
+    "report_json": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\matrix\\instacart_feature_matrix_report.json",
+    "report_md": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\matrix\\instacart_feature_matrix_report.md"
+  }
+}

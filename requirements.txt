@@ -1,0 +1,10 @@
+# Exact runtime versions used to generate and serve the included model artifacts.
+# Use Python 3.14.x for the verified local environment.
+pandas==3.0.0
+numpy==2.4.2
+matplotlib==3.10.8
+scikit-learn==1.8.0
+joblib==1.5.3
+xgboost==3.4.0
+shap==0.52.0
+streamlit==1.61.1

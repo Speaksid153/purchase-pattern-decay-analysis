@@ -1,0 +1,15 @@
+.git
+.env*
+node_modules
+dist
+data
+models
+__pycache__
+*.py[cod]
+*.ipynb
+reports
+dashboard
+docs
+tests
+assets
+*.log
