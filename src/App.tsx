@@ -15,7 +15,7 @@ async function api<T>(url: string, timeout = API_TIMEOUT): Promise<T> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), timeout);
   try {
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, { signal: controller.signal, cache: "no-store" });
     if (!response.ok) throw new Error(`Request failed (${response.status})`);
     return response.json() as Promise<T>;
   } finally {
@@ -64,7 +64,7 @@ export default function App() {
     const delayed = window.setTimeout(() => {
       setListLoading(true);
       const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE), tier, search });
-      fetch(`${API_BASE}/api/customers?${params}`, { signal: controller.signal })
+      fetch(`${API_BASE}/api/customers?${params}`, { signal: controller.signal, cache: "no-store" })
         .then((response) => {
           if (!response.ok) throw new Error(`Request failed (${response.status})`);
           return response.json() as Promise<CustomerResponse>;
