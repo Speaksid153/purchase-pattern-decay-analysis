@@ -12,7 +12,7 @@ COPY deployment/nginx.conf /etc/nginx/nginx.conf
 COPY --from=frontend-build /app/dist /usr/share/nginx/html
 EXPOSE 80
 
-FROM python:3.14.3-alpine AS api
+FROM python:3.15.0rc1-alpine AS api
 
 WORKDIR /app
 RUN apk upgrade --no-cache \
