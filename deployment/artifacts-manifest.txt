@@ -1,5 +1,6 @@
-# Required by scripts/api_server.py. Restore each file at its path relative to the project root.
-# Verify SHA-256 before starting the API. Artifact hosting is intentionally external to Git;
+# Offline source artifacts used only to rebuild or fully verify the serving cache. They are not
+# loaded by scripts/api_server.py during normal operation. Restore them at their project-relative
+# paths when rebuilding, and verify SHA-256 first. Artifact hosting is intentionally external to Git;
 # set ARTIFACT_SOURCE in your deployment runbook to a versioned, access-controlled store.
 
 data/processed/instacart/predictions/leading_xgboost_time_proxy_test_predictions.csv | 58.3 MiB | SHA256 775830398049BC3F222F167BF6FA0AD0C9F29CE976BABB65856504BC9E46CA72 | served portfolio/customer scores

@@ -50,9 +50,9 @@
     }
   ],
   "outputs": {
-    "feature_matrix_pickle": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_feature_matrix.pkl",
-    "feature_matrix_sample_csv": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_feature_matrix_sample.csv",
-    "report_json": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\matrix\\instacart_feature_matrix_report.json",
-    "report_md": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\matrix\\instacart_feature_matrix_report.md"
+    "feature_matrix_pickle": "data/processed/instacart/features/instacart_feature_matrix.pkl",
+    "feature_matrix_sample_csv": "data/processed/instacart/features/instacart_feature_matrix_sample.csv",
+    "report_json": "reports/features/instacart/matrix/instacart_feature_matrix_report.json",
+    "report_md": "reports/features/instacart/matrix/instacart_feature_matrix_report.md"
   }
 }

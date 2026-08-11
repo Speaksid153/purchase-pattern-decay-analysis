@@ -489,11 +489,11 @@ def main() -> None:
         "test_metrics": test_metrics,
         "timing_metric": timing_metric(test_predictions, threshold),
         "outputs": {
-            "trained_model": str(model_path),
-            "test_predictions": str(predictions_path),
-            "test_shap_values": str(shap_path),
-            "report_md": str(REPORT_DIR / "phase4_leading_xgboost_report.md"),
-            "report_json": str(REPORT_DIR / "phase4_leading_xgboost_report.json"),
+            "trained_model": model_path.relative_to(ROOT).as_posix(),
+            "test_predictions": predictions_path.relative_to(ROOT).as_posix(),
+            "test_shap_values": shap_path.relative_to(ROOT).as_posix(),
+            "report_md": (REPORT_DIR / "phase4_leading_xgboost_report.md").relative_to(ROOT).as_posix(),
+            "report_json": (REPORT_DIR / "phase4_leading_xgboost_report.json").relative_to(ROOT).as_posix(),
         },
     }
     write_report(report)

@@ -6,8 +6,8 @@ Built corrected peer baseline features against the current Phase 2 label contrac
 
 ## Outputs
 
-- Model-input feature table: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_baseline_features_model_input.pkl`
-- Feature CSV inspection sample: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_baseline_features_model_input_sample.csv`
+- Model-input feature table: `data/processed/instacart/features/instacart_baseline_features_model_input.pkl`
+- Feature CSV inspection sample: `data/processed/instacart/features/instacart_baseline_features_model_input_sample.csv`
 
 ## Row Counts
 

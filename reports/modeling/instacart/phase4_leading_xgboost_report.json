@@ -296,10 +296,10 @@
     }
   },
   "outputs": {
-    "trained_model": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\models\\phase4\\leading_xgboost_time_proxy.pkl",
-    "test_predictions": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\predictions\\leading_xgboost_time_proxy_test_predictions.csv",
-    "test_shap_values": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\predictions\\leading_xgboost_time_proxy_test_shap_values.pkl",
-    "report_md": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\modeling\\instacart\\phase4_leading_xgboost_report.md",
-    "report_json": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\modeling\\instacart\\phase4_leading_xgboost_report.json"
+    "trained_model": "models/phase4/leading_xgboost_time_proxy.pkl",
+    "test_predictions": "data/processed/instacart/predictions/leading_xgboost_time_proxy_test_predictions.csv",
+    "test_shap_values": "data/processed/instacart/predictions/leading_xgboost_time_proxy_test_shap_values.pkl",
+    "report_md": "reports/modeling/instacart/phase4_leading_xgboost_report.md",
+    "report_json": "reports/modeling/instacart/phase4_leading_xgboost_report.json"
   }
 }

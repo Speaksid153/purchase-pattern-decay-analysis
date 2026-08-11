@@ -57,9 +57,9 @@ Synced Phase 4 modeling against the corrected final feature matrix. This fixes t
 
 ## Outputs
 
-- feature_matrix: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_feature_matrix.pkl`
-- validation_predictions: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\predictions\phase4_validation_predictions.csv`
-- test_predictions: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\predictions\phase4_test_predictions.csv`
-- models_dir: `C:\Users\Siddharth\Documents\Early Churn Predictior\models\phase4`
-- report_json: `C:\Users\Siddharth\Documents\Early Churn Predictior\reports\modeling\instacart\phase4_modeling_report.json`
-- report_md: `C:\Users\Siddharth\Documents\Early Churn Predictior\reports\modeling\instacart\phase4_modeling_report.md`
+- feature_matrix: `data/processed/instacart/features/instacart_feature_matrix.pkl`
+- validation_predictions: `data/processed/instacart/predictions/phase4_validation_predictions.csv`
+- test_predictions: `data/processed/instacart/predictions/phase4_test_predictions.csv`
+- models_dir: `models/phase4`
+- report_json: `reports/modeling/instacart/phase4_modeling_report.json`
+- report_md: `reports/modeling/instacart/phase4_modeling_report.md`

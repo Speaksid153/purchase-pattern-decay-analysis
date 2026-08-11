@@ -8,6 +8,7 @@ type CustomerResponse = { customers: Customer[]; total: number; totalPages: numb
 type Insight = { risk_summary?: string; behavioral_interpretation?: string };
 
 const API_TIMEOUT = 10_000;
+const PAGE_SIZE = 20;
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
 async function api<T>(url: string, timeout = API_TIMEOUT): Promise<T> {
@@ -34,6 +35,9 @@ export default function App() {
   const [metricsError, setMetricsError] = useState<string | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [customerTotal, setCustomerTotal] = useState(0);
+  const [customerTotalPages, setCustomerTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [listLoading, setListLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [tier, setTier] = useState<"All" | RiskTier>("All");
@@ -58,18 +62,33 @@ export default function App() {
   useEffect(() => {
     const controller = new AbortController();
     const delayed = window.setTimeout(() => {
-      const params = new URLSearchParams({ page: "1", pageSize: "20", tier, search, scoreRange: "0.00 - 1.00" });
+      setListLoading(true);
+      const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE), tier, search });
       fetch(`${API_BASE}/api/customers?${params}`, { signal: controller.signal })
-        .then((response) => response.ok ? response.json() : Promise.reject())
+        .then((response) => {
+          if (!response.ok) throw new Error(`Request failed (${response.status})`);
+          return response.json() as Promise<CustomerResponse>;
+        })
         .then((data: CustomerResponse) => {
           setCustomers(data.customers || []);
           setCustomerTotal(data.total || 0);
+          setCustomerTotalPages(Math.max(1, data.totalPages || 1));
           setListError(null);
         })
-        .catch((error) => { if (error.name !== "AbortError") setListError("Customer cohort is unavailable."); });
+        .catch((error: unknown) => {
+          if (!(error instanceof DOMException && error.name === "AbortError")) {
+            setCustomers([]);
+            setCustomerTotal(0);
+            setCustomerTotalPages(1);
+            setListError("Customer cohort is unavailable.");
+          }
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setListLoading(false);
+        });
     }, 180);
     return () => { controller.abort(); window.clearTimeout(delayed); };
-  }, [search, tier]);
+  }, [page, search, tier]);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -120,7 +139,7 @@ export default function App() {
           </section>
           <section className="overview-grid">
             <article className="card distribution-card">
-              <div className="section-heading"><div><p className="eyebrow">Risk Bands</p><h2>Customers by churn risk</h2></div><span className="muted">Applied to the latest model score</span></div>
+              <div className="section-heading"><div><p className="eyebrow">Risk Bands</p><h2>Customers by operational risk band</h2></div><span className="muted">Applied to the latest model score</span></div>
               <div className="distribution-list">{distribution.map((item) => <div className="distribution-row" key={item.label}><span className="dot" style={{ backgroundColor: item.color }} /><span>{item.label} risk</span><strong>{item.value.toLocaleString()}</strong><span className="bar-track"><span style={{ width: `${(item.value / summary.totalCustomers) * 100}%`, backgroundColor: item.color }} /></span></div>)}</div>
               <p className="footnote">Risk bands: High ≥ 0.70 · Medium 0.45–&lt;0.70 · Low &lt;0.45. Operational segmentation rules applied to the model score.</p>
             </article>
@@ -131,10 +150,13 @@ export default function App() {
         <section className="cohort-section">
           <div className="section-heading"><div><p className="eyebrow">Customer cohorts</p><h2>Review customers by risk band</h2></div><span className="muted">{customerTotal.toLocaleString()} matching customers</span></div>
           <div className="controls">
-            <label className="search"><Search size={16} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search customer ID" /></label>
-            <div className="segmented" aria-label="Risk band filter">{(["All", "High", "Medium", "Low"] as const).map((item) => <button key={item} onClick={() => setTier(item)} className={tier === item ? "selected" : ""}>{item}</button>)}</div>
+            <label className="search"><Search size={16} /><input aria-label="Search customer ID" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search customer ID" /></label>
+            <div className="segmented" aria-label="Risk band filter">{(["All", "High", "Medium", "Low"] as const).map((item) => <button key={item} aria-pressed={tier === item} onClick={() => { setTier(item); setPage(1); }} className={tier === item ? "selected" : ""}>{item}</button>)}</div>
           </div>
-          {listError ? <Notice text={listError} /> : <div className="table-card"><table><thead><tr><th>Customer</th><th>Model score</th><th>Why flagged</th><th>Latest purchase gap</th><th /></tr></thead><tbody>{customers.map((customer) => <tr key={customer.id}><td><strong>Customer {customer.id}</strong><span>{customer.orderVolume} observed orders</span></td><td><span className={riskClass(customer.riskTier)}>{customer.riskTier}</span><strong className="score">{pct(customer.riskScore)}</strong></td><td>{customer.primaryRiskDriver?.feature}</td><td>{customer.lastPurchaseDays} days <span className="muted">vs {customer.historicAvgGap} average</span></td><td><button className="detail-link" onClick={() => detail(customer)}>View evidence <ArrowUpRight size={15} /></button></td></tr>)}</tbody></table>{!customers.length && <div className="empty">No customer records match this view.</div>}</div>}
+          {listError ? <Notice text={listError} /> : <>
+            <div className="table-card" aria-busy={listLoading}><table><thead><tr><th>Customer</th><th>Model score</th><th>Why flagged</th><th>Latest purchase gap</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>{customers.map((customer) => <tr key={customer.id}><td><strong>Customer {customer.id}</strong><span>{customer.orderVolume} observed orders</span></td><td><span className={riskClass(customer.riskTier)}>{customer.riskTier}</span><strong className="score">{pct(customer.riskScore)}</strong></td><td>{customer.primaryRiskDriver?.feature}</td><td>{customer.lastPurchaseDays} days <span className="muted">vs {customer.historicAvgGap} average</span></td><td><button className="detail-link" onClick={() => detail(customer)}>View evidence <ArrowUpRight size={15} /></button></td></tr>)}</tbody></table>{listLoading && !customers.length ? <Loading text="Loading customer cohort…" /> : !customers.length && <div className="empty">No customer records match this view.</div>}</div>
+            {customerTotalPages > 1 && <nav className="pagination" aria-label="Customer cohort pages"><button onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1 || listLoading}>Previous</button><span>Page {page.toLocaleString()} of {customerTotalPages.toLocaleString()}</span><button onClick={() => setPage((current) => Math.min(customerTotalPages, current + 1))} disabled={page === customerTotalPages || listLoading}>Next</button></nav>}
+          </>}
         </section>
       </main>}
 

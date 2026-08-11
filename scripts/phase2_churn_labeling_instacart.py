@@ -319,9 +319,9 @@ def main() -> None:
             "user_split": "deterministic user_id hash split so the same user does not appear in multiple modeling splits",
         },
         "outputs": {
-            "labels_csv": str(OUT / "instacart_phase2_decay_labels.csv"),
-            "report_json": str(REPORT / "instacart_phase2_label_report.json"),
-            "report_md": str(REPORT / "instacart_phase2_label_definition.md"),
+            "labels_csv": (OUT / "instacart_phase2_decay_labels.csv").relative_to(ROOT).as_posix(),
+            "report_json": (REPORT / "instacart_phase2_label_report.json").relative_to(ROOT).as_posix(),
+            "report_md": (REPORT / "instacart_phase2_label_definition.md").relative_to(ROOT).as_posix(),
         },
     }
 

@@ -2,9 +2,9 @@
 
 ## Files Reviewed
 
-- `C:/Users/Siddharth/Downloads/phase3 report.md`
-- `C:/Users/Siddharth/Downloads/baseline_features_phase3.ipynb`
-- `C:/Users/Siddharth/Downloads/baseline_features.csv`
+- external peer submission `phase3 report.md`
+- external peer submission `baseline_features_phase3.ipynb`
+- external peer submission `baseline_features.csv`
 
 ## Executive Verdict
 

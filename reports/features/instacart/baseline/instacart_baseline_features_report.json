@@ -18,10 +18,10 @@
     ]
   },
   "outputs": {
-    "features_pickle": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_baseline_features_model_input.pkl",
-    "features_sample_csv": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_baseline_features_model_input_sample.csv",
-    "report_json": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\baseline\\instacart_baseline_features_report.json",
-    "report_md": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\baseline\\instacart_baseline_features_report.md"
+    "features_pickle": "data/processed/instacart/features/instacart_baseline_features_model_input.pkl",
+    "features_sample_csv": "data/processed/instacart/features/instacart_baseline_features_model_input_sample.csv",
+    "report_json": "reports/features/instacart/baseline/instacart_baseline_features_report.json",
+    "report_md": "reports/features/instacart/baseline/instacart_baseline_features_report.md"
   },
   "feature_summaries": [
     {

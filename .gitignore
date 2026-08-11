@@ -26,6 +26,7 @@ tmp/
 # Local runtime output
 logs/
 *.pid
+/deployment/releases/
 
 # Large ML/data artifacts are restored separately for local runs and deployment.
 /data/

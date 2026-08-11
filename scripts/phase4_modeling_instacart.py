@@ -322,12 +322,12 @@ def main() -> None:
     save_predictions(test, test_scores, test_predictions)
 
     outputs = {
-        "feature_matrix": str(FEATURE_MATRIX),
-        "validation_predictions": str(validation_predictions),
-        "test_predictions": str(test_predictions),
-        "models_dir": str(MODEL_DIR),
-        "report_json": str(REPORT_DIR / "phase4_modeling_report.json"),
-        "report_md": str(REPORT_DIR / "phase4_modeling_report.md"),
+        "feature_matrix": FEATURE_MATRIX.relative_to(ROOT).as_posix(),
+        "validation_predictions": validation_predictions.relative_to(ROOT).as_posix(),
+        "test_predictions": test_predictions.relative_to(ROOT).as_posix(),
+        "models_dir": MODEL_DIR.relative_to(ROOT).as_posix(),
+        "report_json": (REPORT_DIR / "phase4_modeling_report.json").relative_to(ROOT).as_posix(),
+        "report_md": (REPORT_DIR / "phase4_modeling_report.md").relative_to(ROOT).as_posix(),
     }
     write_report(results, feature_groups, split_summary, outputs)
 
@@ -337,7 +337,7 @@ def main() -> None:
                 "matrix_rows": int(matrix.shape[0]),
                 "feature_counts": {key: len(value) for key, value in feature_groups.items()},
                 "split_summary": split_summary.to_dict(orient="records"),
-                "report": str(REPORT_DIR / "phase4_modeling_report.md"),
+                "report": (REPORT_DIR / "phase4_modeling_report.md").relative_to(ROOT).as_posix(),
             },
             indent=2,
             default=str,

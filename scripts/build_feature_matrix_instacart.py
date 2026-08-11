@@ -112,10 +112,10 @@ def main() -> None:
         },
         "split_summary": split_summary.to_dict(orient="records"),
         "outputs": {
-            "feature_matrix_pickle": str(FEATURE_DIR / "instacart_feature_matrix.pkl"),
-            "feature_matrix_sample_csv": str(FEATURE_DIR / "instacart_feature_matrix_sample.csv"),
-            "report_json": str(REPORT / "instacart_feature_matrix_report.json"),
-            "report_md": str(REPORT / "instacart_feature_matrix_report.md"),
+            "feature_matrix_pickle": (FEATURE_DIR / "instacart_feature_matrix.pkl").relative_to(ROOT).as_posix(),
+            "feature_matrix_sample_csv": (FEATURE_DIR / "instacart_feature_matrix_sample.csv").relative_to(ROOT).as_posix(),
+            "report_json": (REPORT / "instacart_feature_matrix_report.json").relative_to(ROOT).as_posix(),
+            "report_md": (REPORT / "instacart_feature_matrix_report.md").relative_to(ROOT).as_posix(),
         },
     }
 

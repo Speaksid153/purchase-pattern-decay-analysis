@@ -6,11 +6,11 @@ Built leakage-safe behavioral decay features from current and historical user-or
 
 ## Outputs
 
-- Model-input feature table: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_leading_features_model_input.pkl`
-- Target table: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_leading_feature_targets.pkl`
-- Feature CSV inspection sample: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_leading_features_model_input_sample.csv`
-- Target CSV inspection sample: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_leading_feature_targets_sample.csv`
-- Plots: `C:\Users\Siddharth\Documents\Early Churn Predictior\reports\features\instacart\plots`
+- Model-input feature table: `data/processed/instacart/features/instacart_leading_features_model_input.pkl`
+- Target table: `data/processed/instacart/features/instacart_leading_feature_targets.pkl`
+- Feature CSV inspection sample: `data/processed/instacart/features/instacart_leading_features_model_input_sample.csv`
+- Target CSV inspection sample: `data/processed/instacart/features/instacart_leading_feature_targets_sample.csv`
+- Plots: `reports/features/instacart/plots`
 
 ## Row Counts
 

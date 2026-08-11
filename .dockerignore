@@ -12,4 +12,5 @@ dashboard
 docs
 tests
 assets
+deployment/releases
 *.log

@@ -1,82 +1,87 @@
-# Early Churn Predictor
+# Purchase Pattern Decay Analysis
 
-Internal decision-support dashboard for identifying Instacart users whose next purchase gap may exceed twice their historical median gap. It ranks an early-decay signal; it does **not** predict customer churn, causal outcomes, or calibrated probabilities.
+A deployable machine-learning case study that identifies Instacart users whose next purchase gap may exceed twice their historical median gap. It combines an XGBoost scoring pipeline, explainability artifacts, a read-only Python API, and a responsive React dashboard.
 
-## What is served
+This is deliberately **not presented as a calibrated churn predictor**. The dataset has no global calendar dates, purchase gaps are capped at 30 days, and the score is not a probability. The defensible claim is narrower: purchase-rhythm decay can be ranked as an early operational warning signal.
 
-The React dashboard and Python API serve the `leading_xgboost_time_proxy` model. Its held-out user-level relative-time proxy evaluation is:
+## Model evidence
+
+The deployed `leading_xgboost_time_proxy` model was evaluated with a held-out, user-separated relative-time proxy split:
 
 - ROC-AUC: `0.6607`
 - PR-AUC: `0.2585`
-- Validated action cutoff: `0.5843` (validation top-10% score cutoff)
+- Validation-derived top-10% action cutoff: `0.5843`
 - Precision / recall at that cutoff: `35.53%` / `12.68%`
 - Median lead time among correctly flagged positive-event users: `12.0` days
 
-The dashboard applies three **Operational Risk Bands** to the model score for customer segmentation and intervention analysis: High Risk (`>= 0.70`), Medium Risk (`0.45 <= score < 0.70`), and Low Risk (`< 0.45`). These are **operational risk bands applied to the model score for customer segmentation and intervention analysis**—not calibrated probabilities or statistically validated probability thresholds.
+The dashboard applies operational bands to the model score: High (`>= 0.70`), Medium (`0.45–0.70`), and Low (`< 0.45`). These bands support segmentation and intervention analysis; they are not probability thresholds. The deployed cohort contains 25,718 held-out users (315 High, 3,933 Medium, 21,470 Low).
 
-Current deployed-artifact cohort counts are High: `315`, Medium: `3,933`, Low: `21,470`, Total: `25,718`.
+## What is included
 
-Earlier baseline-versus-leading metrics used an incompatible experiment split and are deliberately not displayed.
+- React 19 and TypeScript dashboard with search, filtering, pagination, detail views, dark mode, responsive layouts, and explicit API failure states.
+- Python read-only API backed by precomputed, indexed SQLite serving caches.
+- Reproducible feature engineering, labeling, model training, SHAP analysis, reports, and notebooks.
+- Multi-stage Docker builds for local Compose and a single-container public portfolio deployment.
+- CI checks for TypeScript, production bundling, API contracts, notebook parsing, Python compilation, and the deployment image.
+- Artifact checksums and a verified 14.8 MiB release-bundle workflow; raw data and large model outputs stay out of Git.
 
-## Local setup
+## Local development
 
-Use Python 3.14.x, then install the pinned dependencies:
+Use Python 3.14.x and Node.js 22.12+ (Node 22 LTS or 24 LTS).
 
 ```powershell
 py -m pip install -r requirements.txt
 npm ci
-```
-
-Start the API in one terminal:
-
-```powershell
 py scripts/api_server.py
 ```
 
-Start the frontend in another:
+In a second terminal:
 
 ```powershell
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`.
+Open `http://127.0.0.1:5173`. On macOS or Linux, replace `py` with `python3`.
 
-## Serving cache
-
-Normal API startup reads only `data/serving/portfolio.sqlite`, `data/serving/customer_detail.sqlite`, and `data/serving/model_metrics.json`; it does not load the raw prediction, SHAP, order, or label artifacts.
-
-To regenerate these offline artifacts after an intentional model/data refresh:
-
-```powershell
-py scripts/build_serving_cache.py
-py scripts/verify_serving_cache.py
-```
-
-The verifier compares all 25,718 raw customer scores and risk bands, cohort sorting/filtering, complete regression payloads for customers 25369 and 63581, and deployed model metrics. The raw files are retained for this audit but are not required at normal runtime.
-
-## Checks
+## Verification
 
 ```powershell
 npm run check
+py scripts/verify_serving_cache.py
 ```
 
-This runs TypeScript checking, the production build, and Python API-contract tests.
+`npm run check` runs TypeScript checking, the production build, and self-contained API-contract tests. The full cache verifier compares all 25,718 served scores and risk bands with the offline artifacts, exercises sorting and filtering, checks complete detail payloads, and confirms deployed metrics.
 
-For a production static build:
+## Public deployment
+
+The portfolio configuration targets a free Render web service. The browser sees one HTTPS origin; Nginx serves the built dashboard, rate-limits and proxies `/api`, and the Python API listens only inside the container.
+
+First create the verified serving bundle:
 
 ```powershell
-npm run build
-npm start
+py scripts/package_serving_cache.py
 ```
 
-`npm start` serves the built static site at `http://127.0.0.1:3000`. Set `VITE_API_BASE_URL` to the separately deployed API origin **at build time**. A reverse proxy or an authenticated same-origin deployment is preferred.
+Upload `deployment/releases/serving-cache-v1.zip` as a versioned GitHub Release asset (or to another HTTPS object store). Then connect the repository as a Render Blueprint and provide:
 
-## Security and deployment
+- `SERVING_BUNDLE_URL`: the asset's direct HTTPS download URL.
+- `SERVING_BUNDLE_SHA256`: the checksum printed by the packaging command and saved beside the ZIP.
 
-The API defaults to `127.0.0.1`, permits only local Vite origins, and supports an optional `API_AUTH_TOKEN` bearer token. Set `API_HOST`, `API_PORT`, `ALLOWED_ORIGINS`, and `API_AUTH_TOKEN` for a controlled deployment; never put API secrets in a `VITE_*` variable.
+The container downloads only the three runtime files, verifies the bundle and every internal file before boot, and fails closed on any mismatch. See [deployment/README.md](deployment/README.md) for the complete runbook and the separate Docker Compose path.
 
-Runtime files are deliberately outside Git. Restore and SHA-256 verify the paths in [deployment/artifacts-manifest.txt](deployment/artifacts-manifest.txt) from a versioned, access-controlled artifact store before deploying. The repository does not provision that store because its location and access policy are an infrastructure decision.
+Render's free service is suitable for a resume demo, not an always-on production workload: it sleeps after inactivity and the first visit can take roughly a minute. Upgrade to an always-on instance only if that delay becomes unacceptable.
 
-A provider-neutral Docker package is included for a same-origin production deployment. Follow [deployment/README.md](deployment/README.md); it mounts the verified serving cache read-only and keeps the API off the public port. It does not provision infrastructure or deploy the application.
+## Data and limitations
 
-The old Streamlit screens remain only as analysis utilities. The supported operator surface is the React dashboard plus Python API.
+The project uses the anonymized Instacart Market Basket Analysis data published for [Kaggle's 2017 competition](https://www.kaggle.com/c/basket-analysis/overview). Customer IDs are dataset identifiers, not real customer identities. Raw data is not committed. The runtime cache contains only derived scores, aggregate behavior, explanation payloads, and model metrics required by the demo.
+
+Key limitations:
+
+- Relative user lifecycle time is a proxy, not calendar-time validation.
+- The target measures unusually long next-order gaps, not permanent customer loss.
+- Results show ranking utility, not causal impact or intervention lift.
+- The current model is appropriate for portfolio and decision-support demonstration, not autonomous customer treatment.
+
+## License
+
+Original project code is released under the [MIT License](LICENSE). Dataset usage and archived peer material remain subject to the terms described in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

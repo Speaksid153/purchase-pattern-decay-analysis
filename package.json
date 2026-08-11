@@ -1,8 +1,12 @@
 {
-  "name": "react-example",
+  "name": "purchase-pattern-decay-analysis",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Decision-support dashboard for early purchase-pattern decay analysis.",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0 <25"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173",
     "build": "vite build",
@@ -10,7 +14,7 @@
     "start": "npm run preview",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "lint": "tsc --noEmit",
-    "test": "py -m unittest discover -s tests -p \"test_*.py\"",
+    "test": "node scripts/run_python_tests.mjs",
     "check": "npm run lint && npm run build && npm test"
   },
   "dependencies": {

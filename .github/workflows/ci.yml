@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - run: npm ci
+      - run: npm run check
+      - name: Compile Python and parse notebooks
+        run: |
+          python -m compileall -q src scripts dashboard tests
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          notebooks = list(Path(".").rglob("*.ipynb"))
+          for notebook in notebooks:
+              json.loads(notebook.read_text(encoding="utf-8"))
+          print(f"Parsed {len(notebooks)} notebooks")
+          PY
+      - name: Validate all container targets
+        run: |
+          docker build --target api --tag purchase-pattern-api:ci .
+          docker build --target web --tag purchase-pattern-web:ci .
+          docker build --target portfolio --tag purchase-pattern-analysis:ci .

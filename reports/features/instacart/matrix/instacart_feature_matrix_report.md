@@ -6,8 +6,8 @@ Joined corrected leading features, corrected peer baseline features, and the Pha
 
 ## Outputs
 
-- Feature matrix: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_feature_matrix.pkl`
-- CSV inspection sample: `C:\Users\Siddharth\Documents\Early Churn Predictior\data\processed\instacart\features\instacart_feature_matrix_sample.csv`
+- Feature matrix: `data/processed/instacart/features/instacart_feature_matrix.pkl`
+- CSV inspection sample: `data/processed/instacart/features/instacart_feature_matrix_sample.csv`
 
 ## Source Counts
 

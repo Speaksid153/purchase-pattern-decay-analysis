@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: purchase-pattern-analysis
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    healthCheckPath: /api/health
+    maxShutdownDelaySeconds: 15
+    envVars:
+      - key: SERVING_BUNDLE_URL
+        sync: false
+      - key: SERVING_BUNDLE_SHA256
+        sync: false

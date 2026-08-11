@@ -150,10 +150,10 @@ def main() -> None:
             "feature_columns": feature_cols,
         },
         "outputs": {
-            "features_pickle": str(FEATURE_DIR / "instacart_baseline_features_model_input.pkl"),
-            "features_sample_csv": str(FEATURE_DIR / "instacart_baseline_features_model_input_sample.csv"),
-            "report_json": str(REPORT / "instacart_baseline_features_report.json"),
-            "report_md": str(REPORT / "instacart_baseline_features_report.md"),
+            "features_pickle": (FEATURE_DIR / "instacart_baseline_features_model_input.pkl").relative_to(ROOT).as_posix(),
+            "features_sample_csv": (FEATURE_DIR / "instacart_baseline_features_model_input_sample.csv").relative_to(ROOT).as_posix(),
+            "report_json": (REPORT / "instacart_baseline_features_report.json").relative_to(ROOT).as_posix(),
+            "report_md": (REPORT / "instacart_baseline_features_report.md").relative_to(ROOT).as_posix(),
         },
         "feature_summaries": summaries,
     }

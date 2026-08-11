@@ -256,8 +256,8 @@
     "user_split": "deterministic user_id hash split so the same user does not appear in multiple modeling splits"
   },
   "outputs": {
-    "labels_csv": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\labels\\instacart_phase2_decay_labels.csv",
-    "report_json": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\phase2\\instacart_phase2_label_report.json",
-    "report_md": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\phase2\\instacart_phase2_label_definition.md"
+    "labels_csv": "data/processed/instacart/labels/instacart_phase2_decay_labels.csv",
+    "report_json": "reports/phase2/instacart_phase2_label_report.json",
+    "report_md": "reports/phase2/instacart_phase2_label_definition.md"
   }
 }

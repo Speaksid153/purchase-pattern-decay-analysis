@@ -2,7 +2,7 @@
 
 You are taking over an existing project on my local machine:
 
-`C:\Users\Siddharth\Documents\Early Churn Predictior`
+the repository root
 
 Project name: **Early Behavioral Churn Prediction**
 

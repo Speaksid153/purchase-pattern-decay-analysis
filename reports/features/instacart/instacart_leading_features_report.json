@@ -5,13 +5,13 @@
     "label_eligible_rows_used_for_validation": 2489335
   },
   "outputs": {
-    "features_pickle": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_leading_features_model_input.pkl",
-    "targets_pickle": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_leading_feature_targets.pkl",
-    "features_sample_csv": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_leading_features_model_input_sample.csv",
-    "targets_sample_csv": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\data\\processed\\instacart\\features\\instacart_leading_feature_targets_sample.csv",
-    "report_json": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\instacart_leading_features_report.json",
-    "report_md": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\instacart_leading_features_report.md",
-    "plots_dir": "C:\\Users\\Siddharth\\Documents\\Early Churn Predictior\\reports\\features\\instacart\\plots"
+    "features_pickle": "data/processed/instacart/features/instacart_leading_features_model_input.pkl",
+    "targets_pickle": "data/processed/instacart/features/instacart_leading_feature_targets.pkl",
+    "features_sample_csv": "data/processed/instacart/features/instacart_leading_features_model_input_sample.csv",
+    "targets_sample_csv": "data/processed/instacart/features/instacart_leading_feature_targets_sample.csv",
+    "report_json": "reports/features/instacart/instacart_leading_features_report.json",
+    "report_md": "reports/features/instacart/instacart_leading_features_report.md",
+    "plots_dir": "reports/features/instacart/plots"
   },
   "feature_count": 38,
   "top_null_rates": {
