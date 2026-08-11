@@ -6,7 +6,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:1.30.4-alpine AS web
+FROM nginx:1.31.3-alpine AS web
 
 COPY deployment/nginx.conf /etc/nginx/nginx.conf
 COPY --from=frontend-build /app/dist /usr/share/nginx/html
@@ -29,7 +29,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 EXPOSE 5001
 CMD ["python", "scripts/api_server.py"]
 
-FROM nginx:1.30.4-alpine AS portfolio
+FROM nginx:1.31.3-alpine AS portfolio
 
 USER root
 WORKDIR /app
