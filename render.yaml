@@ -5,9 +5,9 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
-  autoDeployTrigger: checksPass
-  healthCheckPath: /api/health
-  envVars:
+    autoDeployTrigger: checksPass
+    healthCheckPath: /api/health
+    envVars:
       - key: SERVING_BUNDLE_URL
         sync: false
       - key: SERVING_BUNDLE_SHA256
