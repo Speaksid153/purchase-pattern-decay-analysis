@@ -30,7 +30,7 @@ The dashboard applies operational bands to the model score: High (`>= 0.70`), Me
 
 - React 19 and TypeScript dashboard with search, filtering, pagination, customer evidence, dark mode, responsive layouts, and explicit API failure states.
 - Python read-only API backed by precomputed, indexed SQLite serving caches.
-- Reproducible feature engineering, labeling, model training, SHAP analysis, reports, and notebooks.
+- Eight self-contained, fully executed notebooks covering validation, EDA, labeling, feature engineering, modeling, and SHAP analysis.
 - Multi-stage Docker builds for local Compose and a single-container public portfolio deployment.
 - CI checks for TypeScript, production bundling, API contracts, notebook parsing, Python compilation, and the deployment image.
 - Artifact checksums and a verified 14.8 MiB release-bundle workflow; raw data and large model outputs stay out of Git.
@@ -38,8 +38,8 @@ The dashboard applies operational bands to the model score: High (`>= 0.70`), Me
 ## Repository guide
 
 - [`src/`](src/) contains the production React dashboard and analytical insight rules.
-- [`scripts/`](scripts/) contains the canonical validation, feature engineering, modeling, serving-cache, and API workflows.
-- [`notebooks/`](notebooks/) provides reviewable notebook versions of the eight-stage analytical workflow.
+- [`notebooks/`](notebooks/) contains the canonical eight-stage analytical workflow with retained outputs and rendered evidence.
+- [`scripts/`](scripts/) contains only production support code: the API, serving-cache packaging, verification, and benchmarking utilities.
 - [`reports/project_validation_summary.md`](reports/project_validation_summary.md) summarizes the end-to-end validation evidence.
 - [`reports/modeling/instacart/phase4_leading_xgboost_report.md`](reports/modeling/instacart/phase4_leading_xgboost_report.md) documents the deployed model and its limitations.
 - [`deployment/`](deployment/) contains the public and self-hosted deployment runbooks.
@@ -62,6 +62,8 @@ npm run dev
 ```
 
 Open `http://127.0.0.1:5173`. On macOS or Linux, replace `py` with `python3`.
+
+For analytical reproduction, open the notebooks in numeric order after placing the Instacart CSVs under `data/instacart/`. Every committed notebook has already been executed against the full dataset, so its outputs are visible directly on GitHub.
 
 ## Verification
 

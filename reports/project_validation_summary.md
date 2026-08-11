@@ -8,8 +8,8 @@ Checked the complete labeling, feature engineering, modeling, API, dashboard, an
 
 ## Code And Notebook Checks
 
-- Python scripts compiled successfully: 15
-- Jupyter notebooks parsed successfully: 8
+- Runtime, library, deployment, and test Python modules compiled successfully: 17
+- Canonical Jupyter notebooks fully executed successfully: 8 notebooks / 40 code cells / 0 errors
 - TypeScript checking, production bundling, API contracts, and serving-bundle tests passed.
 
 ## Master Matrix Contract
@@ -69,4 +69,4 @@ Large and derived files are intentionally ignored:
 - `__pycache__/`
 - generated JSON reports and non-curated diagnostic plots
 
-Canonical reports, eight notebooks, reproducible scripts, and selected analytical plots are kept in the project tree for review.
+Canonical reports, eight self-contained executed notebooks, the minimum production/runtime Python modules, and selected analytical plots are kept in the project tree for review.

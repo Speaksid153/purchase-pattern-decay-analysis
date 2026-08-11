@@ -23,17 +23,32 @@ jobs:
           python-version: "3.14"
       - run: npm ci
       - run: npm run check
-      - name: Compile Python and parse notebooks
+      - name: Compile runtime Python and validate executed notebooks
         run: |
-          python -m compileall -q src scripts tests
+          python -m compileall -q src scripts deployment tests
           python - <<'PY'
           import json
           from pathlib import Path
 
-          notebooks = list(Path(".").rglob("*.ipynb"))
+          notebooks = sorted(Path("notebooks").glob("*.ipynb"))
+          if len(notebooks) != 8:
+              raise SystemExit(f"Expected 8 analytical notebooks, found {len(notebooks)}")
+
           for notebook in notebooks:
-              json.loads(notebook.read_text(encoding="utf-8"))
-          print(f"Parsed {len(notebooks)} notebooks")
+              document = json.loads(notebook.read_text(encoding="utf-8"))
+              code_cells = [cell for cell in document["cells"] if cell["cell_type"] == "code"]
+              unexecuted = [cell for cell in code_cells if cell.get("execution_count") is None]
+              errors = [
+                  output
+                  for cell in code_cells
+                  for output in cell.get("outputs", [])
+                  if output.get("output_type") == "error"
+              ]
+              if unexecuted or errors:
+                  raise SystemExit(
+                      f"{notebook}: {len(unexecuted)} unexecuted code cells, {len(errors)} errors"
+                  )
+          print(f"Validated {len(notebooks)} fully executed notebooks")
           PY
       - name: Validate all container targets
         run: |
