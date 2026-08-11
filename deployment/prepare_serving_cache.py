@@ -80,6 +80,27 @@ def _extract_verified(bundle: Path, destination: Path) -> None:
         raise ValueError("Serving bundle is not a valid ZIP archive") from error
 
 
+def _install_verified(source_directory: Path) -> None:
+    """Atomically install verified files without crossing filesystem boundaries."""
+    TARGET_DIR.mkdir(parents=True, exist_ok=True)
+    for name in REQUIRED_FILES:
+        staging_file = tempfile.NamedTemporaryFile(
+            dir=TARGET_DIR,
+            prefix=f".{name}.",
+            suffix=".tmp",
+            delete=False,
+        )
+        staging_path = Path(staging_file.name)
+        try:
+            with staging_file, (source_directory / name).open("rb") as source:
+                shutil.copyfileobj(source, staging_file, length=1024 * 1024)
+                staging_file.flush()
+                os.fsync(staging_file.fileno())
+            os.replace(staging_path, TARGET_DIR / name)
+        finally:
+            staging_path.unlink(missing_ok=True)
+
+
 def prepare_serving_cache() -> None:
     if _cache_exists():
         print("Using serving cache already present in the image or mounted filesystem", flush=True)
@@ -103,7 +124,5 @@ def prepare_serving_cache() -> None:
             raise ValueError(f"Serving bundle SHA-256 mismatch: expected {expected_hash}, received {actual_hash}")
         _extract_verified(bundle, extracted)
 
-        TARGET_DIR.mkdir(parents=True, exist_ok=True)
-        for name in REQUIRED_FILES:
-            os.replace(extracted / name, TARGET_DIR / name)
+        _install_verified(extracted)
     print("Serving cache downloaded and verified", flush=True)

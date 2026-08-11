@@ -57,6 +57,35 @@ class ServingBundleTests(unittest.TestCase):
             for name, content in FILES.items():
                 self.assertEqual((target / name).read_bytes(), content)
 
+    def test_stages_files_on_target_filesystem_before_atomic_replace(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            bundle = root / "bundle.zip"
+            bundle_hash = create_bundle(bundle)
+            target = root / "serving"
+            environment = {
+                "SERVING_BUNDLE_URL": bundle.as_uri(),
+                "SERVING_BUNDLE_SHA256": bundle_hash,
+            }
+            real_replace = os.replace
+
+            def reject_cross_filesystem_replace(source: Path, destination: Path) -> None:
+                if Path(source).parent != target:
+                    raise OSError(18, "Cross-device link", str(source), str(destination))
+                real_replace(source, destination)
+
+            with patch.object(prepare_serving_cache, "TARGET_DIR", target), patch.dict(
+                os.environ, environment, clear=False
+            ), patch.object(
+                prepare_serving_cache.os,
+                "replace",
+                side_effect=reject_cross_filesystem_replace,
+            ):
+                prepare_serving_cache.prepare_serving_cache()
+
+            for name, content in FILES.items():
+                self.assertEqual((target / name).read_bytes(), content)
+
     def test_rejects_archive_with_unexpected_content(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
