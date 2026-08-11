@@ -11,11 +11,6 @@ These notebooks mirror the reproducible scripts in `scripts/`:
 - `07_phase4_modeling_instacart.ipynb`
 - `08_phase4_leading_xgboost_instacart.ipynb`
 
-Peer-submitted originals are archived under:
-
-- `peer_submissions/baseline_features_phase3_original.ipynb`
-- `peer_submissions/phase4_baseline_original.ipynb`
-
 They are generated from the Python scripts so the workflows can be reviewed interactively in Jupyter. The scripts remain the canonical reproducible entry points.
 
 Run notebooks from the project root or from this folder. Raw and processed data must exist locally under `data/`.

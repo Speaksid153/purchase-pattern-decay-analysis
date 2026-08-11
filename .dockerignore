@@ -8,8 +8,6 @@ __pycache__
 *.py[cod]
 *.ipynb
 reports
-dashboard
-docs
 tests
 assets
 deployment/releases

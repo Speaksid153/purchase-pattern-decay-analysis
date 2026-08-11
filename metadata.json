@@ -1,5 +1,0 @@
-{
-  "name": "Purchase Pattern Analysis",
-  "description": "Decision-support dashboard for reviewing early purchase-pattern decay signals, operational risk bands, and customer-level model evidence.",
-  "requestFramePermissions": []
-}

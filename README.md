@@ -4,85 +4,104 @@ A deployable machine-learning case study that identifies Instacart users whose n
 
 Built as a collaboration between Siddharth R and Shreya B.N.
 
-This is deliberately not presented as a calibrated churn predictor. The dataset has no global calendar dates, purchase gaps are capped at 30 days, and the score is not a probability. The defensible claim is narrower: purchase-rhythm decay can be ranked as an early operational warning signal.
+This project is deliberately **not presented as a calibrated churn predictor**. The dataset has no global calendar dates, purchase gaps are capped at 30 days, and the score is not a probability. The defensible claim is narrower: purchase-rhythm decay can be ranked as an early operational warning signal.
 
+## Live demo
+
+**[Open the deployed dashboard](https://purchase-pattern-analysis.onrender.com/)**
+
+[View the v1.0.0 deployment release](https://github.com/Speaksid153/purchase-pattern-decay-analysis/releases/tag/v1.0.0). The free Render instance sleeps after inactivity, so its first load can take roughly a minute.
 
 ## Model evidence
 
 The deployed `leading_xgboost_time_proxy` model was evaluated with a held-out, user-separated relative-time proxy split:
 
-- ROC-AUC: 0.6607
-- PR-AUC: 0.2585
-- Validation-derived top-10% action cutoff: 0.5843
-- Precision / recall at that cutoff: 35.53% / 12.68%
-- Median lead time among correctly flagged positive-event users: 12.0 days
+- ROC-AUC: `0.6607`
+- PR-AUC: `0.2585`
+- Validation-derived top-10% action cutoff: `0.5843`
+- Precision / recall at that cutoff: `35.53%` / `12.68%`
+- Median lead time among correctly flagged positive-event users: `12.0` days
 
-The dashboard applies operational bands to the model score: High (>= 0.70), Medium (0.45-0.70), and Low (< 0.45). These bands support segmentation and intervention analysis; they are not probability thresholds. The deployed cohort contains 25,718 held-out users (315 High, 3,933 Medium, 21,470 Low).
+The dashboard applies operational bands to the model score: High (`>= 0.70`), Medium (`>= 0.45 and < 0.70`), and Low (`< 0.45`). These bands support segmentation and intervention analysis; they are not probability thresholds. The deployed cohort contains 25,718 held-out users: 315 High, 3,933 Medium, and 21,470 Low.
 
+![Global SHAP feature importance](reports/modeling/instacart/plots/shap_global_importance.png)
 
 ## What is included
 
-- React 19 and TypeScript dashboard with search, filtering, pagination, detail views, dark mode, responsive layouts, and explicit API failure states.
+- React 19 and TypeScript dashboard with search, filtering, pagination, customer evidence, dark mode, responsive layouts, and explicit API failure states.
 - Python read-only API backed by precomputed, indexed SQLite serving caches.
 - Reproducible feature engineering, labeling, model training, SHAP analysis, reports, and notebooks.
 - Multi-stage Docker builds for local Compose and a single-container public portfolio deployment.
 - CI checks for TypeScript, production bundling, API contracts, notebook parsing, Python compilation, and the deployment image.
 - Artifact checksums and a verified 14.8 MiB release-bundle workflow; raw data and large model outputs stay out of Git.
 
+## Repository guide
+
+- [`src/`](src/) contains the production React dashboard and analytical insight rules.
+- [`scripts/`](scripts/) contains the canonical validation, feature engineering, modeling, serving-cache, and API workflows.
+- [`notebooks/`](notebooks/) provides reviewable notebook versions of the eight-stage analytical workflow.
+- [`reports/project_validation_summary.md`](reports/project_validation_summary.md) summarizes the end-to-end validation evidence.
+- [`reports/modeling/instacart/phase4_leading_xgboost_report.md`](reports/modeling/instacart/phase4_leading_xgboost_report.md) documents the deployed model and its limitations.
+- [`deployment/`](deployment/) contains the public and self-hosted deployment runbooks.
+- [`tests/`](tests/) verifies API contracts and secure serving-bundle installation.
 
 ## Local development
 
-Use Python 3.14.x and Node.js 22.12+ (Node 22 LTS or 24 LTS).
+Use Python 3.14.x and Node.js 22.12+.
 
-    py -m pip install -r requirements.txt
-    npm ci
-    py scripts/api_server.py
+```powershell
+py -m pip install -r requirements.txt
+npm ci
+py scripts/api_server.py
+```
 
 In a second terminal:
 
-    npm run dev
+```powershell
+npm run dev
+```
 
-Open http://127.0.0.1:5173. On macOS or Linux, replace `py` with `python3`.
-
+Open `http://127.0.0.1:5173`. On macOS or Linux, replace `py` with `python3`.
 
 ## Verification
 
-    npm run check
-    py scripts/verify_serving_cache.py
+```powershell
+npm run check
+py scripts/verify_serving_cache.py
+```
 
 `npm run check` runs TypeScript checking, the production build, and self-contained API-contract tests. The full cache verifier compares all 25,718 served scores and risk bands with the offline artifacts, exercises sorting and filtering, checks complete detail payloads, and confirms deployed metrics.
-
 
 ## Public deployment
 
 The portfolio configuration targets a free Render web service. The browser sees one HTTPS origin; Nginx serves the built dashboard, rate-limits and proxies `/api`, and the Python API listens only inside the container.
 
-First create the verified serving bundle:
+Create the verified serving bundle with:
 
-    py scripts/package_serving_cache.py
+```powershell
+py scripts/package_serving_cache.py
+```
 
-Upload `deployment/releases/serving-cache-v1.zip` as a versioned GitHub Release asset (or to another HTTPS object store). Then connect the repository as a Render Blueprint and provide:
+Upload `deployment/releases/serving-cache-v1.zip` as a versioned GitHub Release asset, then connect the repository as a Render Blueprint and provide:
 
-- SERVING_BUNDLE_URL: the asset's direct HTTPS download URL.
-- SERVING_BUNDLE_SHA256: the checksum printed by the packaging command and saved beside the ZIP.
+- `SERVING_BUNDLE_URL`: the asset's direct HTTPS download URL.
+- `SERVING_BUNDLE_SHA256`: the checksum printed by the packaging command.
 
-The container downloads only the three runtime files, verifies the bundle and every internal file before boot, and fails closed on any mismatch. See deployment/README.md for the complete runbook and the separate Docker Compose path.
+The container downloads only the three runtime files, verifies the bundle and every internal file before boot, and fails closed on any mismatch. See the [deployment runbook](deployment/README.md) for the complete process and the separate Docker Compose path.
 
-Render's free service is suitable for a resume demo, not an always-on production workload: it sleeps after inactivity and the first visit can take roughly a minute. Upgrade to an always-on instance only if that delay becomes unacceptable.
-
+Render's free service is suitable for a resume demo, not an always-on production workload. Upgrade to an always-on instance if cold-start delays become unacceptable.
 
 ## Data and limitations
 
-The project uses the anonymized Instacart Market Basket Analysis data published for Kaggle's 2017 competition (https://www.kaggle.com/c/basket-analysis/overview). Customer IDs are dataset identifiers, not real customer identities. Raw data is not committed. The runtime cache contains only derived scores, aggregate behavior, explanation payloads, and model metrics required by the demo.
+The project uses the anonymized Instacart Market Basket Analysis data published for [Kaggle's 2017 competition](https://www.kaggle.com/c/basket-analysis/overview). Customer IDs are dataset identifiers, not real customer identities. Raw data is not committed. The runtime cache contains only derived scores, aggregate behavior, explanation payloads, and model metrics required by the demo.
 
 Key limitations:
 
 - Relative user lifecycle time is a proxy, not calendar-time validation.
 - The target measures unusually long next-order gaps, not permanent customer loss.
 - Results show ranking utility, not causal impact or intervention lift.
-- The current model is appropriate for portfolio and decision-support demonstration, not autonomous customer treatment.
-
+- The model is appropriate for portfolio and decision-support demonstration, not autonomous customer treatment.
 
 ## License
 
-Original project code is released under the MIT License. Dataset usage and archived peer material remain subject to the terms described in THIRD_PARTY_NOTICES.md.
+Original project code is released under the [MIT License](LICENSE). Dataset and dependency terms are described in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

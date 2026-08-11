@@ -28,6 +28,10 @@ logs/
 *.pid
 /deployment/releases/
 
+# Generated analytical artifacts; curated Markdown reports and selected plots stay tracked.
+reports/**/*.json
+reports/**/plots/*.png
+
 # Large ML/data artifacts are restored separately for local runs and deployment.
 /data/
 /models/

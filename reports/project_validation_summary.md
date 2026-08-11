@@ -1,16 +1,16 @@
 # Project Validation Summary
 
-Validation date: 2026-07-28
+Validation date: 2026-08-11
 
 ## Scope
 
-Checked the project after syncing peer Phase 3/4 work and adding the focused leading-indicator XGBoost deliverable.
+Checked the complete labeling, feature engineering, modeling, API, dashboard, and deployment workflow after the public portfolio release.
 
 ## Code And Notebook Checks
 
-- Python scripts compiled successfully: 8
-- Jupyter notebooks parsed successfully: 10
-- Peer original notebooks are archived under `notebooks/peer_submissions/`.
+- Python scripts compiled successfully: 15
+- Jupyter notebooks parsed successfully: 8
+- TypeScript checking, production bundling, API contracts, and serving-bundle tests passed.
 
 ## Master Matrix Contract
 
@@ -58,7 +58,6 @@ Focused leading XGBoost deliverable:
 
 - `reports/modeling/instacart/phase4_modeling_report.md`
 - `reports/modeling/instacart/phase4_leading_xgboost_report.md`
-- `reports/modeling/instacart/phase4_peer_sync_fix.md`
 
 ## GitHub Hygiene
 
@@ -68,5 +67,6 @@ Large and derived files are intentionally ignored:
 - `models/`
 - `outputs/`
 - `__pycache__/`
+- generated JSON reports and non-curated diagnostic plots
 
-Reports, notebooks, scripts, and source modules are kept in the project tree for review.
+Canonical reports, eight notebooks, reproducible scripts, and selected analytical plots are kept in the project tree for review.

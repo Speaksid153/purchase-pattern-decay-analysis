@@ -25,7 +25,7 @@ jobs:
       - run: npm run check
       - name: Compile Python and parse notebooks
         run: |
-          python -m compileall -q src scripts dashboard tests
+          python -m compileall -q src scripts tests
           python - <<'PY'
           import json
           from pathlib import Path
