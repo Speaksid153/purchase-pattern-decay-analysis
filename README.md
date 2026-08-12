@@ -2,7 +2,7 @@
 
 A deployable machine-learning case study that identifies Instacart users whose next purchase gap may exceed twice their historical median gap. It combines an XGBoost scoring pipeline, explainability artifacts, a read-only Python API, and a responsive React dashboard.
 
-Built as a collaboration between Siddharth R and Shreya B.N.
+> **Equal-contribution collaboration:** This project is jointly authored and presented as a 50–50 collaborative effort by [Siddharth R](https://github.com/Speaksid153) and [Shreya B.N.](https://github.com/Shreya-BN-06). The repository being hosted under Siddharth's personal GitHub account does not imply sole authorship.
 
 This project is deliberately **not presented as a calibrated churn predictor**. The dataset has no global calendar dates, purchase gaps are capped at 30 days, and the score is not a probability. The defensible claim is narrower: purchase-rhythm decay can be ranked as an early operational warning signal.
 
@@ -108,6 +108,13 @@ Key limitations:
 - The target measures unusually long next-order gaps, not permanent customer loss.
 - Results show ranking utility, not causal impact or intervention lift.
 - The model is appropriate for portfolio and decision-support demonstration, not autonomous customer treatment.
+
+## Project collaborators
+
+- [Siddharth R — @Speaksid153](https://github.com/Speaksid153)
+- [Shreya B.N. — @Shreya-BN-06](https://github.com/Shreya-BN-06)
+
+Both collaborators are credited equally for this project. Repository-wide code ownership is declared in [`.github/CODEOWNERS`](.github/CODEOWNERS).
 
 ## License
 
