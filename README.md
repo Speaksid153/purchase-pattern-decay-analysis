@@ -1,121 +1,228 @@
 # Purchase Pattern Decay Analysis
 
-A deployable machine-learning case study that identifies Instacart users whose next purchase gap may exceed twice their historical median gap. It combines an XGBoost scoring pipeline, explainability artifacts, a read-only Python API, and a responsive React dashboard.
+![ML](https://img.shields.io/badge/ML-XGBoost-orange?style=flat-square) ![Frontend](https://img.shields.io/badge/Frontend-React%2019%20%2B%20TypeScript-blue?style=flat-square) ![Backend](https://img.shields.io/badge/Backend-Python%203.14-green?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square) ![Deployment](https://img.shields.io/badge/Deployed-Render-purple?style=flat-square)
 
-> **Equal-contribution collaboration:** This project is jointly authored and presented as a 50–50 collaborative effort by [Siddharth R](https://github.com/Speaksid153) and [Shreya B.N.](https://github.com/Shreya-BN-06). The repository being hosted under Siddharth's personal GitHub account does not imply sole authorship.
+> Early behavioral warning system that identifies Instacart users whose next purchase gap may exceed twice their historical median — an operational signal of purchase-rhythm decay.
 
-This project is deliberately **not presented as a calibrated churn predictor**. The dataset has no global calendar dates, purchase gaps are capped at 30 days, and the score is not a probability. The defensible claim is narrower: purchase-rhythm decay can be ranked as an early operational warning signal.
+**[🚀 Open Live Demo](https://purchase-pattern-analysis.onrender.com/)** · **[📦 v1.0.0 Release](https://github.com/Speaksid153/purchase-pattern-decay-analysis/releases/tag/v1.0.0)**
 
-## Live demo
+> ⚠️ The free Render instance sleeps after inactivity. First load may take ~60 seconds.
 
-**[Open the deployed dashboard](https://purchase-pattern-analysis.onrender.com/)**
+---
 
-[View the v1.0.0 deployment release](https://github.com/Speaksid153/purchase-pattern-decay-analysis/releases/tag/v1.0.0). The free Render instance sleeps after inactivity, so its first load can take roughly a minute.
+## 👥 Authorship
 
-## Model evidence
+This project is an **equal-contribution collaboration** between [Siddharth R](https://github.com/Speaksid153) and [Shreya B.N.](https://github.com/Shreya-BN-06). The repository being hosted under Siddharth's personal GitHub account does not imply sole authorship. Repository-wide code ownership is formally declared in [`.github/CODEOWNERS`](.github/CODEOWNERS).
 
-The deployed model was selected across two rolling user-lifecycle development folds, retrained on all development rows, and evaluated once on the untouched final 15% user cohort:
+---
 
-- Row ROC-AUC: `0.6640` (previously `0.6607`)
-- Row PR-AUC: `0.2637` (previously `0.2585`)
-- Latest-customer ROC-AUC: `0.6707` (previously `0.6604`)
-- Latest-customer PR-AUC: `0.2750` (previously `0.2650`)
-- Rolling-development action cutoff: `0.5836`
-- Precision / recall at that cutoff: `36.01%` / `13.81%`
-- Median lead time among correctly flagged positive-event users: `12.0` days
+## 📖 Overview
 
-This is a measured improvement, not a breakthrough: the row-level ROC-AUC gain is `0.0034`, while the larger `0.0103` gain appears at the latest-customer decision point. More complex feature and weighting variants were tested and rejected when they failed to generalize better across rolling folds.
+A deployable machine-learning case study combining an XGBoost scoring pipeline, SHAP explainability, a read-only Python API backed by precomputed SQLite caches, and a full React 19 + TypeScript dashboard with search, filtering, risk-band segmentation, and dark mode.
 
-The dashboard applies operational bands to the model score: High (`>= 0.70`), Medium (`>= 0.45 and < 0.70`), and Low (`< 0.45`). These bands support segmentation and intervention analysis; they are not probability thresholds. The deployed cohort contains 25,718 held-out users: 295 High, 3,973 Medium, and 21,450 Low.
+> ⚠️ **This project is deliberately not presented as a calibrated churn predictor.** The dataset has no global calendar dates, purchase gaps are capped at 30 days, and the score is not a probability. The defensible claim is narrower: purchase-rhythm decay can be ranked as an early operational warning signal.
+
+---
+
+## 🛠️ Skills & Technologies
+
+### Machine Learning & Data Science
+| Tool | Role |
+|------|------|
+| XGBoost | Gradient-boosted tree model for gap-exceedance scoring |
+| SHAP | Global and per-customer feature attribution |
+| Rolling CV | Two-fold user-lifecycle development validation |
+| Feature Engineering | Inter-purchase gap, order frequency, basket behavior |
+| Pandas / NumPy | Data wrangling and feature construction |
+| Matplotlib | Visualization and explainability output |
+
+### Backend & API
+| Tool | Role |
+|------|------|
+| Python 3.14 | Pipeline, serving API, packaging, and verification |
+| SQLite | Precomputed, indexed serving caches — no live inference at serve time |
+| Nginx | Rate-limiting, HTTPS proxy, single-origin architecture |
+| Docker | Multi-stage builds for local Compose + portfolio deployment |
+
+### Frontend
+| Tool | Role |
+|------|------|
+| React 19 | Production dashboard |
+| TypeScript | Strict typing across all dashboard and API components |
+| Vite | Development server and production bundler |
+
+### Infrastructure & DevOps
+| Tool | Role |
+|------|------|
+| Render | Free-tier public deployment (portfolio grade) |
+| Docker Compose | Local self-hosted path |
+| GitHub CI | TypeScript, build, API contracts, notebook parsing, Python compilation, image verification |
+| SHA-256 Checksums | Verified serving bundle; fails closed on any mismatch |
+
+---
+
+## 📊 Model Evidence
+
+Selected across two rolling user-lifecycle development folds, retrained on all development rows, and evaluated once on the **untouched final 15% user cohort**.
+
+| Metric | Current | Previous | Δ |
+|--------|---------|----------|---|
+| Row ROC-AUC | **0.6640** | 0.6607 | +0.0034 |
+| Row PR-AUC | **0.2637** | 0.2585 | +0.0052 |
+| Latest-customer ROC-AUC | **0.6707** | 0.6604 | +0.0103 |
+| Latest-customer PR-AUC | **0.2750** | 0.2650 | +0.0100 |
+| Action cutoff | 0.5836 | — | — |
+| Precision @ cutoff | 36.01% | — | — |
+| Recall @ cutoff | 13.81% | — | — |
+| Median lead time (true positives) | **12.0 days** | — | — |
+
+This is a measured improvement, not a breakthrough. More complex feature and weighting variants were tested and rejected when they failed to generalize across rolling folds.
+
+### Operational Risk Bands
+
+> Bands support segmentation and intervention analysis. They are not calibrated probability thresholds.
+
+| Band | Score Range | Users (held-out cohort) |
+|------|-------------|------------------------|
+| 🔴 High | ≥ 0.70 | 295 |
+| 🟡 Medium | ≥ 0.45 and < 0.70 | 3,973 |
+| 🟢 Low | < 0.45 | 21,450 |
+| **Total** | | **25,718** |
 
 ![Global SHAP feature importance](reports/modeling/instacart/plots/shap_global_importance.png)
 
-## What is included
+---
 
-- React 19 and TypeScript dashboard with search, filtering, pagination, customer evidence, dark mode, responsive layouts, and explicit API failure states.
-- Python read-only API backed by precomputed, indexed SQLite serving caches.
-- Nine self-contained, fully executed notebooks covering validation, EDA, labeling, feature engineering, modeling, temporal-robustness experiments, and SHAP analysis.
-- Multi-stage Docker builds for local Compose and a single-container public portfolio deployment.
-- CI checks for TypeScript, production bundling, API contracts, notebook parsing, Python compilation, and the deployment image.
-- Artifact checksums and a verified compact release-bundle workflow; raw data and large model outputs stay out of Git.
+## 📦 What's Included
 
-## Repository guide
+**Dashboard (React 19 + TypeScript)**
+- Customer search, risk-band filtering, and pagination
+- Per-customer SHAP evidence and behavioral detail panel
+- Dark mode, responsive layout, and explicit API failure states
 
-- [`src/`](src/) contains the production React dashboard and analytical insight rules.
-- [`notebooks/`](notebooks/) contains the canonical nine-stage analytical workflow with retained outputs and rendered evidence.
-- [`scripts/`](scripts/) contains only production support code: the API, serving-cache packaging, verification, and benchmarking utilities.
-- [`reports/project_validation_summary.md`](reports/project_validation_summary.md) summarizes the end-to-end validation evidence.
-- [`reports/modeling/instacart/phase4_leading_xgboost_report.md`](reports/modeling/instacart/phase4_leading_xgboost_report.md) documents the deployed model and its limitations.
-- [`reports/modeling/instacart/temporal_robustness_report.md`](reports/modeling/instacart/temporal_robustness_report.md) records every development candidate and the honest pre/post comparison.
-- [`deployment/`](deployment/) contains the public and self-hosted deployment runbooks.
-- [`tests/`](tests/) verifies API contracts and secure serving-bundle installation.
+**API & Serving**
+- Read-only Python API with precomputed SQLite indexes
+- Nginx proxy with rate limiting inside the deployment container
+- Zero live model inference at serve time
 
-## Local development
+**Notebooks (9 stages, all fully executed)**
+- Dataset validation and EDA
+- Label construction and feature engineering
+- Model training and selection
+- Temporal-robustness experiments
+- SHAP global and per-instance analysis
 
-Use Python 3.14.x and Node.js 22.12+.
+**Infrastructure**
+- Multi-stage Docker builds (local Compose + single-container public deploy)
+- CI suite: TypeScript, production build, API contracts, notebook parsing, Python compilation, deployment image verification
+- SHA-256 artifact checksums; raw data and large outputs stay out of Git
+- Verified compact release-bundle workflow
 
-```powershell
+---
+
+## 🗂️ Repository Guide
+
+| Path | Contents |
+|------|----------|
+| [`src/`](src/) | Production React dashboard and analytical insight rules |
+| [`notebooks/`](notebooks/) | Nine-stage analytical workflow with retained outputs and rendered evidence |
+| [`scripts/`](scripts/) | API server, serving-cache packaging, verification, and benchmarking utilities |
+| [`deployment/`](deployment/) | Public and self-hosted deployment runbooks |
+| [`reports/project_validation_summary.md`](reports/project_validation_summary.md) | End-to-end validation evidence |
+| [`reports/modeling/instacart/phase4_leading_xgboost_report.md`](reports/modeling/instacart/phase4_leading_xgboost_report.md) | Deployed model documentation and limitations |
+| [`reports/modeling/instacart/temporal_robustness_report.md`](reports/modeling/instacart/temporal_robustness_report.md) | All development candidates and honest pre/post comparison |
+| [`tests/`](tests/) | API contract verification and serving-bundle installation tests |
+
+---
+
+## 💻 Local Development
+
+**Requirements:** Python 3.14.x · Node.js 22.12+
+
+```bash
+# Terminal 1 — install dependencies and start API
 py -m pip install -r requirements.txt
 npm ci
 py scripts/api_server.py
-```
 
-In a second terminal:
-
-```powershell
+# Terminal 2 — start dev server
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`. On macOS or Linux, replace `py` with `python3`.
+Open **http://127.0.0.1:5173**
 
-For analytical reproduction, open the notebooks in numeric order after placing the Instacart CSVs under `data/instacart/`. Every committed notebook has already been executed against the full dataset, so its outputs are visible directly on GitHub.
+> On macOS or Linux, replace `py` with `python3`.
 
-## Verification
+**Analytical reproduction:** Place the Instacart CSVs under `data/instacart/` and open the notebooks in numeric order. Every committed notebook has already been executed against the full dataset — outputs are visible directly on GitHub without re-running.
 
-```powershell
+---
+
+## ✅ Verification
+
+```bash
 npm run check
 py scripts/verify_serving_cache.py
 ```
 
-`npm run check` runs TypeScript checking, the production build, and self-contained API-contract tests. The full cache verifier compares all 25,718 served scores and risk bands with the offline artifacts, exercises sorting and filtering, checks complete detail payloads, and confirms deployed metrics.
+`npm run check` runs TypeScript checking, the production build, and self-contained API-contract tests.
 
-## Public deployment
+The full cache verifier:
+- Compares all 25,718 served scores and risk bands against offline artifacts
+- Exercises sorting and filtering
+- Checks complete detail payloads
+- Confirms deployed metrics match expected values
 
-The portfolio configuration targets a free Render web service. The browser sees one HTTPS origin; Nginx serves the built dashboard, rate-limits and proxies `/api`, and the Python API listens only inside the container.
+---
 
-Create the verified serving bundle with:
+## 🚀 Public Deployment (Render)
 
-```powershell
+The browser sees one HTTPS origin; Nginx serves the built dashboard, rate-limits and proxies `/api`, and the Python API listens only inside the container.
+
+**Step 1** — Create the verified serving bundle:
+```bash
 py scripts/package_serving_cache.py
 ```
 
-Upload `deployment/releases/serving-cache-v2-robust.zip` as a versioned GitHub Release asset, then connect the repository as a Render Blueprint and provide:
+**Step 2** — Upload `deployment/releases/serving-cache-v2-robust.zip` as a versioned GitHub Release asset.
 
-- `SERVING_BUNDLE_URL`: the asset's direct HTTPS download URL.
-- `SERVING_BUNDLE_SHA256`: the checksum printed by the packaging command.
+**Step 3** — Connect the repository as a Render Blueprint and set:
 
-The container downloads only the three runtime files, verifies the bundle and every internal file before boot, and fails closed on any mismatch. See the [deployment runbook](deployment/README.md) for the complete process and the separate Docker Compose path.
+| Variable | Value |
+|----------|-------|
+| `SERVING_BUNDLE_URL` | Direct HTTPS URL of the uploaded asset |
+| `SERVING_BUNDLE_SHA256` | Checksum printed by the packaging command |
 
-Render's free service is suitable for a resume demo, not an always-on production workload. Upgrade to an always-on instance if cold-start delays become unacceptable.
+The container downloads only the three runtime files, verifies the bundle and every internal file before boot, and **fails closed** on any mismatch.
 
-## Data and limitations
+See [`deployment/README.md`](deployment/README.md) for the complete process and the Docker Compose path.
 
-The project uses the anonymized Instacart Market Basket Analysis data published for [Kaggle's 2017 competition](https://www.kaggle.com/c/basket-analysis/overview). Customer IDs are dataset identifiers, not real customer identities. Raw data is not committed. The runtime cache contains only derived scores, aggregate behavior, explanation payloads, and model metrics required by the demo.
+> Render's free service is suitable for a resume demo, not an always-on production workload. Upgrade to a paid instance if cold-start delays become unacceptable.
 
-Key limitations:
+---
 
-- Relative user lifecycle time is a proxy, not calendar-time validation.
-- The target measures unusually long next-order gaps, not permanent customer loss.
-- Results show ranking utility, not causal impact or intervention lift.
-- The model is appropriate for portfolio and decision-support demonstration, not autonomous customer treatment.
+## ⚠️ Data & Limitations
 
-## Project collaborators
+**Dataset:** Anonymized Instacart Market Basket Analysis data published for [Kaggle's 2017 competition](https://www.kaggle.com/c/basket-analysis/overview). Customer IDs are dataset identifiers, not real customer identities. Raw data is not committed. The runtime cache contains only derived scores, aggregate behavior, explanation payloads, and model metrics required by the demo.
 
-- [Siddharth R — @Speaksid153](https://github.com/Speaksid153)
-- [Shreya B.N. — @Shreya-BN-06](https://github.com/Shreya-BN-06)
+**Key limitations:**
+- Relative user lifecycle time is a proxy, not calendar-time validation
+- The target measures unusually long next-order gaps, not permanent customer loss
+- Results show ranking utility, not causal impact or intervention lift
+- Appropriate for portfolio and decision-support demonstration only — not autonomous customer treatment
 
-Both collaborators are credited equally for this project. Repository-wide code ownership is declared in [`.github/CODEOWNERS`](.github/CODEOWNERS).
+---
 
-## License
+## 👤 Project Collaborators
+
+| Collaborator | GitHub |
+|---|---|
+| Siddharth R | [@Speaksid153](https://github.com/Speaksid153) |
+| Shreya B.N. | [@Shreya-BN-06](https://github.com/Shreya-BN-06) |
+
+Both collaborators are credited equally. Repository-wide ownership is declared in [`.github/CODEOWNERS`](.github/CODEOWNERS).
+
+---
+
+## 📄 License
 
 Original project code is released under the [MIT License](LICENSE). Dataset and dependency terms are described in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
