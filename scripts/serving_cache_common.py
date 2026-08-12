@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 
 from src.insights.rules import get_clean_feature_description, get_feature_category
-from dashboard.screen1_risk_table import FEATURE_LABELS
 
 ROOT = Path(__file__).resolve().parents[1]
 PREDICTIONS_PATH = ROOT / "data/processed/instacart/predictions/leading_xgboost_time_proxy_test_predictions.csv"
@@ -53,7 +52,7 @@ def model_metrics_payload() -> dict:
     report = json.loads(MODEL_REPORT_PATH.read_text(encoding="utf-8"))
     metrics, timing = report["test_metrics"], report["timing_metric"]
     return {
-        "modelName": "Leading XGBoost (user-level relative-time proxy)",
+        "modelName": "Temporally robust leading XGBoost (relative-time proxy)",
         "rocAuc": round(float(metrics["roc_auc"]), 4),
         "prAuc": round(float(metrics["pr_auc"]), 4),
         "evaluationThreshold": round(float(metrics["threshold"]), 4),
@@ -62,7 +61,7 @@ def model_metrics_payload() -> dict:
         "medianLeadTimeDays": round(float(timing["days_before_decay_threshold_summary"]["median"]), 1),
         "correctlyFlaggedUsers": int(timing["correctly_flagged_users"]),
         "positiveEventUsers": int(timing["positive_event_users"]),
-        "methodology": "Held-out user-level relative-time proxy evaluation. The evaluation cutoff is the validation top-10% score cutoff; it is not a calibrated probability or a calendar-time churn forecast.",
+        "methodology": "Selected across two rolling user-lifecycle development folds, retrained on train plus validation, and evaluated once on an untouched final 15% user cohort. The evaluation cutoff is development-derived; the score is not a calibrated probability or a calendar-time churn forecast.",
     }
 
 
@@ -117,6 +116,6 @@ def raw_customer_records() -> tuple[list[dict], dict[int, dict]]:
             "orderHistory": [{"orderNumber": int(row.order_number), "daysSincePrior": round(float(row.days_since_prior_order), 1) if pd.notna(row.days_since_prior_order) else None} for row in orders_group.itertuples()],
         }
         details[customer_id] = detail
-        portfolio.append({"customer_id": customer_id, "score": round(score, 4), "risk_band": band, "top_driver": FEATURE_LABELS.get(primary_feature, primary_feature.replace("_", " ")), "latest_order_id": int(latest["order_id"]), "relative_day": int(latest["relative_day"]), "last_purchase_days": detail["lastPurchaseDays"], "historic_avg_gap": detail["historicAvgGap"], "order_volume": detail["orderVolume"]})
+        portfolio.append({"customer_id": customer_id, "score": round(score, 4), "risk_band": band, "top_driver": get_clean_feature_description(primary_feature), "latest_order_id": int(latest["order_id"]), "relative_day": int(latest["relative_day"]), "last_purchase_days": detail["lastPurchaseDays"], "historic_avg_gap": detail["historicAvgGap"], "order_volume": detail["orderVolume"]})
     portfolio.sort(key=lambda row: (-row["score"], row["customer_id"]))
     return portfolio, details

@@ -31,8 +31,8 @@ jobs:
           from pathlib import Path
 
           notebooks = sorted(Path("notebooks").glob("*.ipynb"))
-          if len(notebooks) != 8:
-              raise SystemExit(f"Expected 8 analytical notebooks, found {len(notebooks)}")
+          if len(notebooks) != 9:
+              raise SystemExit(f"Expected 9 analytical notebooks, found {len(notebooks)}")
 
           for notebook in notebooks:
               document = json.loads(notebook.read_text(encoding="utf-8"))

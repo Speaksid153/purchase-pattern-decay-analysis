@@ -12,7 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 ROOT = Path(__file__).resolve().parents[1]
 SERVING_DIR = ROOT / "data" / "serving"
 OUTPUT_DIR = ROOT / "deployment" / "releases"
-BUNDLE_PATH = OUTPUT_DIR / "serving-cache-v1.zip"
+BUNDLE_PATH = OUTPUT_DIR / "serving-cache-v2-robust.zip"
 REQUIRED_FILES = ("portfolio.sqlite", "customer_detail.sqlite", "model_metrics.json")
 FIXED_TIMESTAMP = (2026, 1, 1, 0, 0, 0)
 
@@ -28,6 +28,7 @@ def sha256(path: Path) -> str:
 def add_file(archive: ZipFile, source: Path, archive_name: str) -> None:
     info = ZipInfo(archive_name, FIXED_TIMESTAMP)
     info.compress_type = ZIP_DEFLATED
+    info._compresslevel = 1
     info.external_attr = 0o100644 << 16
     with source.open("rb") as input_handle, archive.open(info, "w") as output_handle:
         shutil.copyfileobj(input_handle, output_handle, length=1024 * 1024)
@@ -50,11 +51,12 @@ def main() -> None:
         },
     }
 
-    with ZipFile(BUNDLE_PATH, "w", compression=ZIP_DEFLATED, compresslevel=9) as archive:
+    with ZipFile(BUNDLE_PATH, "w", compression=ZIP_DEFLATED, compresslevel=1) as archive:
         for name in REQUIRED_FILES:
             add_file(archive, SERVING_DIR / name, name)
         manifest_info = ZipInfo("manifest.json", FIXED_TIMESTAMP)
         manifest_info.compress_type = ZIP_DEFLATED
+        manifest_info._compresslevel = 1
         manifest_info.external_attr = 0o100644 << 16
         archive.writestr(manifest_info, json.dumps(manifest, indent=2, sort_keys=True) + "\n")
 

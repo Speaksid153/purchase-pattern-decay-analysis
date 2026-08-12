@@ -19,7 +19,7 @@ Confirm their hashes against `artifacts-manifest.txt`, then package them:
 
 ```powershell
 py scripts/package_serving_cache.py
-Get-Content deployment/releases/serving-cache-v1.zip.sha256
+Get-Content deployment/releases/serving-cache-v2-robust.zip.sha256
 ```
 
 The generated ZIP and checksum are excluded from Git. Upload both to a versioned GitHub Release or an HTTPS object store. Do not deploy the raw prediction, SHAP, order, label, or training files.
@@ -27,13 +27,13 @@ The generated ZIP and checksum are excluded from Git. Upload both to a versioned
 ## Deploy the portfolio service on Render
 
 1. Push the repository to GitHub.
-2. Create a GitHub Release such as `serving-cache-v1` and attach `serving-cache-v1.zip` plus its `.sha256` file.
+2. Create a GitHub Release such as `serving-cache-v2` and attach `serving-cache-v2-robust.zip` plus its `.sha256` file.
 3. In Render, create a Blueprint from the repository. Render reads `render.yaml` and builds the final `portfolio` Docker stage.
 4. Enter the direct release-asset URL as `SERVING_BUNDLE_URL` and the 64-character lowercase checksum as `SERVING_BUNDLE_SHA256`.
 5. Leave `API_AUTH_TOKEN` unset for the anonymous, read-only demo. The public Nginx endpoint rate-limits API requests; the Python port remains loopback-only.
 6. After deployment, check `/api/health`, `/api/portfolio-summary`, `/api/customers/25369`, `/api/customers/63581`, and `/api/model-metrics` on the Render URL.
 
-Every cold boot downloads the 14.8 MiB archive because free Render filesystems are ephemeral. Startup verifies the archive SHA-256, an internal manifest, each file size, and each file SHA-256 before either service starts. A missing or modified artifact prevents startup.
+Every cold boot downloads the compact serving archive because free Render filesystems are ephemeral. Startup verifies the archive SHA-256, an internal manifest, each file size, and each file SHA-256 before either service starts. A missing or modified artifact prevents startup.
 
 The Render free plan sleeps after 15 minutes without traffic. This is acceptable for a portfolio link if the README and resume do not claim an always-on SLA. Use a paid always-on service if cold starts become a presentation problem.
 

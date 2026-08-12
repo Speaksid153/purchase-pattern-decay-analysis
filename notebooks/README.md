@@ -12,6 +12,7 @@ These are the canonical, self-contained analytical workflows for the project:
 | 6 | [`06_build_feature_matrix_instacart.ipynb`](06_build_feature_matrix_instacart.ipynb) | Fully executed |
 | 7 | [`07_phase4_modeling_instacart.ipynb`](07_phase4_modeling_instacart.ipynb) | Fully executed |
 | 8 | [`08_phase4_leading_xgboost_instacart.ipynb`](08_phase4_leading_xgboost_instacart.ipynb) | Fully executed with SHAP evidence |
+| 9 | [`09_temporal_robustness_experiments.ipynb`](09_temporal_robustness_experiments.ipynb) | Fully executed rolling-fold model selection and untouched-test evaluation |
 
 Each notebook is structured into configuration, reusable helpers, pipeline definition, execution, and rendered evidence. All code cells were executed against the full local Instacart dataset before publication, and the retained outputs contain no execution errors.
 

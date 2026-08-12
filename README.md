@@ -14,15 +14,19 @@ This project is deliberately **not presented as a calibrated churn predictor**. 
 
 ## Model evidence
 
-The deployed `leading_xgboost_time_proxy` model was evaluated with a held-out, user-separated relative-time proxy split:
+The deployed model was selected across two rolling user-lifecycle development folds, retrained on all development rows, and evaluated once on the untouched final 15% user cohort:
 
-- ROC-AUC: `0.6607`
-- PR-AUC: `0.2585`
-- Validation-derived top-10% action cutoff: `0.5843`
-- Precision / recall at that cutoff: `35.53%` / `12.68%`
+- Row ROC-AUC: `0.6640` (previously `0.6607`)
+- Row PR-AUC: `0.2637` (previously `0.2585`)
+- Latest-customer ROC-AUC: `0.6707` (previously `0.6604`)
+- Latest-customer PR-AUC: `0.2750` (previously `0.2650`)
+- Rolling-development action cutoff: `0.5836`
+- Precision / recall at that cutoff: `36.01%` / `13.81%`
 - Median lead time among correctly flagged positive-event users: `12.0` days
 
-The dashboard applies operational bands to the model score: High (`>= 0.70`), Medium (`>= 0.45 and < 0.70`), and Low (`< 0.45`). These bands support segmentation and intervention analysis; they are not probability thresholds. The deployed cohort contains 25,718 held-out users: 315 High, 3,933 Medium, and 21,470 Low.
+This is a measured improvement, not a breakthrough: the row-level ROC-AUC gain is `0.0034`, while the larger `0.0103` gain appears at the latest-customer decision point. More complex feature and weighting variants were tested and rejected when they failed to generalize better across rolling folds.
+
+The dashboard applies operational bands to the model score: High (`>= 0.70`), Medium (`>= 0.45 and < 0.70`), and Low (`< 0.45`). These bands support segmentation and intervention analysis; they are not probability thresholds. The deployed cohort contains 25,718 held-out users: 295 High, 3,973 Medium, and 21,450 Low.
 
 ![Global SHAP feature importance](reports/modeling/instacart/plots/shap_global_importance.png)
 
@@ -30,18 +34,19 @@ The dashboard applies operational bands to the model score: High (`>= 0.70`), Me
 
 - React 19 and TypeScript dashboard with search, filtering, pagination, customer evidence, dark mode, responsive layouts, and explicit API failure states.
 - Python read-only API backed by precomputed, indexed SQLite serving caches.
-- Eight self-contained, fully executed notebooks covering validation, EDA, labeling, feature engineering, modeling, and SHAP analysis.
+- Nine self-contained, fully executed notebooks covering validation, EDA, labeling, feature engineering, modeling, temporal-robustness experiments, and SHAP analysis.
 - Multi-stage Docker builds for local Compose and a single-container public portfolio deployment.
 - CI checks for TypeScript, production bundling, API contracts, notebook parsing, Python compilation, and the deployment image.
-- Artifact checksums and a verified 14.8 MiB release-bundle workflow; raw data and large model outputs stay out of Git.
+- Artifact checksums and a verified compact release-bundle workflow; raw data and large model outputs stay out of Git.
 
 ## Repository guide
 
 - [`src/`](src/) contains the production React dashboard and analytical insight rules.
-- [`notebooks/`](notebooks/) contains the canonical eight-stage analytical workflow with retained outputs and rendered evidence.
+- [`notebooks/`](notebooks/) contains the canonical nine-stage analytical workflow with retained outputs and rendered evidence.
 - [`scripts/`](scripts/) contains only production support code: the API, serving-cache packaging, verification, and benchmarking utilities.
 - [`reports/project_validation_summary.md`](reports/project_validation_summary.md) summarizes the end-to-end validation evidence.
 - [`reports/modeling/instacart/phase4_leading_xgboost_report.md`](reports/modeling/instacart/phase4_leading_xgboost_report.md) documents the deployed model and its limitations.
+- [`reports/modeling/instacart/temporal_robustness_report.md`](reports/modeling/instacart/temporal_robustness_report.md) records every development candidate and the honest pre/post comparison.
 - [`deployment/`](deployment/) contains the public and self-hosted deployment runbooks.
 - [`tests/`](tests/) verifies API contracts and secure serving-bundle installation.
 
@@ -84,7 +89,7 @@ Create the verified serving bundle with:
 py scripts/package_serving_cache.py
 ```
 
-Upload `deployment/releases/serving-cache-v1.zip` as a versioned GitHub Release asset, then connect the repository as a Render Blueprint and provide:
+Upload `deployment/releases/serving-cache-v2-robust.zip` as a versioned GitHub Release asset, then connect the repository as a Render Blueprint and provide:
 
 - `SERVING_BUNDLE_URL`: the asset's direct HTTPS download URL.
 - `SERVING_BUNDLE_SHA256`: the checksum printed by the packaging command.
