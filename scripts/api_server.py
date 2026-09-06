@@ -59,23 +59,39 @@ class ServingStore:
         total, high, medium, low = sum(counts.values()), counts.get("High", 0), counts.get("Medium", 0), counts.get("Low", 0)
         return {"highRiskCount": high, "mediumRiskCount": medium, "lowRiskCount": low, "totalCustomers": total, "elevatedRiskPercentage": round((high + medium) / total * 100, 2) if total else 0.0, "primaryBehavioralSignal": driver_row["top_driver"] if driver_row else "No behavioral signal available", "portfolioInsightHeadline": f"{(high + medium) / total:.2%} of scored customers are in the High or Medium Risk Bands for operational risk segmentation." if total else "No scored customers are available."}
 
-    def customers(self, tier: str, search: str, page: int, page_size: int) -> dict:
+    def customers(self, tier: str, search: str, page: int, page_size: int, sort_by: str = "score", sort_dir: str = "desc") -> dict:
         filters, values = [], []
-        if tier not in {"All", "All Tiers"}:
+        if tier == "Review":
+            filters.append("risk_band IN ('High', 'Medium')")
+        elif tier not in {"All", "All Tiers"}:
             if tier not in {"High", "Medium", "Low"}:
-                raise ValueError("tier must be All, High, Medium, or Low")
+                raise ValueError("tier must be Review, All, High, Medium, or Low")
             filters.append("risk_band = ?")
             values.append(tier)
         if search:
             filters.append("CAST(customer_id AS TEXT) LIKE ?")
             values.append(f"%{search}%")
         where = f" WHERE {' AND '.join(filters)}" if filters else ""
+        sort_columns = {
+            "score": "score",
+            "status": "CASE risk_band WHEN 'High' THEN 3 WHEN 'Medium' THEN 2 ELSE 1 END",
+            "latestGap": "last_purchase_days",
+            "historicGap": "historic_avg_gap",
+            "orders": "order_volume",
+            "customerId": "customer_id",
+        }
+        if sort_by not in sort_columns:
+            raise ValueError("sortBy must be score, status, latestGap, historicGap, orders, or customerId")
+        if sort_dir not in {"asc", "desc"}:
+            raise ValueError("sortDir must be asc or desc")
+        order_column = sort_columns[sort_by]
+        order_direction = sort_dir.upper()
         with closing(self._connection(PORTFOLIO_DB)) as db:
             total = db.execute(f"SELECT COUNT(*) FROM portfolio{where}", values).fetchone()[0]
             total_pages = max(1, math.ceil(total / page_size))
             if page > total_pages:
                 raise ValueError(f"page must not exceed {total_pages}")
-            rows = db.execute(f"SELECT customer_id, score, risk_band, top_driver, last_purchase_days, historic_avg_gap, order_volume FROM portfolio{where} ORDER BY score DESC, customer_id LIMIT ? OFFSET ?", [*values, page_size, (page - 1) * page_size]).fetchall()
+            rows = db.execute(f"SELECT customer_id, score, risk_band, top_driver, last_purchase_days, historic_avg_gap, order_volume FROM portfolio{where} ORDER BY {order_column} {order_direction}, customer_id ASC LIMIT ? OFFSET ?", [*values, page_size, (page - 1) * page_size]).fetchall()
         return {"customers": [{"id": str(row["customer_id"]), "riskScore": row["score"], "riskTier": row["risk_band"], "lastPurchaseDays": row["last_purchase_days"], "historicAvgGap": row["historic_avg_gap"], "orderVolume": row["order_volume"], "primaryRiskDriver": {"feature": row["top_driver"]}} for row in rows], "total": total, "page": page, "pageSize": page_size, "totalPages": total_pages}
 
     def customer(self, customer_id: int) -> dict | None:
@@ -176,7 +192,7 @@ class BackendApiHandler(BaseHTTPRequestHandler):
         elif path == "/api/customers":
             page = _positive_int(params.get("page", ["1"])[0], "page", 1, 100_000)
             page_size = _positive_int(params.get("pageSize", ["20"])[0], "pageSize", 1, MAX_PAGE_SIZE)
-            self._send_json(STORE.customers(params.get("tier", ["All"])[0], params.get("search", [""])[0].strip(), page, page_size))
+            self._send_json(STORE.customers(params.get("tier", ["All"])[0], params.get("search", [""])[0].strip(), page, page_size, params.get("sortBy", ["score"])[0], params.get("sortDir", ["desc"])[0]))
         elif path.startswith("/api/customers/"):
             try:
                 customer_id = int(path.removeprefix("/api/customers/").removeprefix("CUST-").strip())

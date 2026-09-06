@@ -65,15 +65,20 @@ def model_metrics_payload() -> dict:
     }
 
 
-def _drivers(shap_row: pd.Series) -> tuple[list[dict], dict, dict, str]:
-    values = shap_row[[c for c in shap_row.index if c.startswith("shap_") and c != "shap_bias"]]
-    values = values.astype(float).rename(index=lambda c: c.removeprefix("shap_"))
-    positive, negative = values[values > 0].sort_values(ascending=False), values[values < 0].sort_values()
-    primary_feature, primary_value = (positive.index[0], float(positive.iloc[0])) if not positive.empty else ("No positive feature contribution", 0.0)
-    protective_feature, protective_value = (negative.index[0], float(negative.iloc[0])) if not negative.empty else ("No feature reduced the model score", 0.0)
+def _drivers_from_values(values: np.ndarray, features: list[str]) -> tuple[list[dict], dict, dict, str]:
+    """Build driver payloads without allocating a pandas Series per customer."""
+    positive = np.flatnonzero(values > 0)
+    negative = np.flatnonzero(values < 0)
+    positive = positive[np.argsort(-values[positive], kind="stable")]
+    negative = negative[np.argsort(values[negative], kind="stable")]
+    primary_feature = features[int(positive[0])] if positive.size else "No positive feature contribution"
+    primary_value = float(values[positive[0]]) if positive.size else 0.0
+    protective_feature = features[int(negative[0])] if negative.size else "No feature reduced the model score"
+    protective_value = float(values[negative[0]]) if negative.size else 0.0
     displayed = [
-        {"feature": str(feature), "cleanDescription": get_clean_feature_description(str(feature)), "category": get_feature_category(str(feature)), "shapValue": round(float(value), 4), "suggestedAction": ACTION_RULES.get(str(feature), "Validate this signal before offering an incentive.")}
-        for feature, value in positive.head(5).items()
+        {"feature": feature, "cleanDescription": get_clean_feature_description(feature), "category": get_feature_category(feature), "shapValue": round(float(values[index]), 4), "suggestedAction": ACTION_RULES.get(feature, "Validate this signal before offering an incentive.")}
+        for index in positive[:5]
+        for feature in [features[int(index)]]
     ]
     return (
         displayed,
@@ -81,6 +86,38 @@ def _drivers(shap_row: pd.Series) -> tuple[list[dict], dict, dict, str]:
         {"feature": get_clean_feature_description(str(protective_feature)), "category": get_feature_category(str(protective_feature)), "shapValue": round(protective_value, 4)},
         str(primary_feature),
     )
+
+
+def _drivers(shap_row: pd.Series) -> tuple[list[dict], dict, dict, str]:
+    columns = [c for c in shap_row.index if c.startswith("shap_") and c != "shap_bias"]
+    return _drivers_from_values(
+        shap_row[columns].to_numpy(dtype=float),
+        [column.removeprefix("shap_") for column in columns],
+    )
+
+
+def orders_through_snapshot(orders_group: pd.DataFrame, latest_order_id: int) -> pd.DataFrame:
+    """Return one customer's order history through the scored order.
+
+    Prediction and SHAP rows are keyed to a specific order.  Using orders after
+    that point mixes future behavior into the evidence shown for the score.
+    """
+    matches = orders_group.index[orders_group["order_id"].eq(latest_order_id)]
+    if len(matches) != 1:
+        raise ValueError(
+            f"Expected one scored order {latest_order_id}; found {len(matches)}"
+        )
+    scored_order_number = int(orders_group.loc[matches[0], "order_number"])
+    return orders_group[orders_group["order_number"].le(scored_order_number)].copy()
+
+
+def snapshot_gap_metrics(snapshot_orders: pd.DataFrame) -> tuple[float, float]:
+    """Return the scored gap and its prior-only historical baseline."""
+    observed_gaps = snapshot_orders["days_since_prior_order"].dropna()
+    historical_gaps = snapshot_orders.iloc[:-1]["days_since_prior_order"].dropna()
+    latest_gap = round(float(observed_gaps.iloc[-1]), 1) if not observed_gaps.empty else 0.0
+    historical_average = round(float(historical_gaps.mean()), 1) if not historical_gaps.empty else 0.0
+    return latest_gap, historical_average
 
 
 def raw_customer_records() -> tuple[list[dict], dict[int, dict]]:
@@ -91,29 +128,41 @@ def raw_customer_records() -> tuple[list[dict], dict[int, dict]]:
     latest_shap = latest.merge(pd.read_pickle(SHAP_PATH), on=["user_id", "order_id"], how="left", validate="one_to_one")
     if latest_shap.filter(regex=r"^shap_").isna().all(axis=1).any():
         raise ValueError("One or more latest prediction rows have no SHAP detail")
-    shap_by_customer = {int(row["user_id"]): row for _, row in latest_shap.set_index("user_id", drop=False).iterrows()}
-    orders = pd.read_csv(ORDERS_PATH, usecols=["user_id", "order_number", "days_since_prior_order"])
+    shap_columns = [column for column in latest_shap.columns if column.startswith("shap_") and column != "shap_bias"]
+    shap_features = [column.removeprefix("shap_") for column in shap_columns]
+    driver_by_customer = {
+        int(customer_id): _drivers_from_values(values, shap_features)
+        for customer_id, values in zip(
+            latest_shap["user_id"].to_numpy(),
+            latest_shap[shap_columns].to_numpy(dtype=float, copy=False),
+            strict=True,
+        )
+    }
+    orders = pd.read_csv(
+        ORDERS_PATH,
+        usecols=["order_id", "user_id", "order_number", "days_since_prior_order"],
+    )
     order_groups = {int(uid): group.sort_values("order_number", kind="mergesort") for uid, group in orders.groupby("user_id", sort=False)}
     prediction_groups = {int(uid): group for uid, group in predictions.groupby("user_id", sort=False)}
     portfolio, details = [], {}
     for customer_id, pred_group in prediction_groups.items():
         latest = pred_group.iloc[-1]
-        shap_row = shap_by_customer[customer_id]
-        drivers, primary, protective, primary_feature = _drivers(shap_row)
+        drivers, primary, protective, primary_feature = driver_by_customer[customer_id]
         orders_group = order_groups.get(customer_id, pd.DataFrame(columns=orders.columns))
-        valid_gaps = orders_group["days_since_prior_order"].dropna()
+        snapshot_orders = orders_through_snapshot(orders_group, int(latest["order_id"]))
+        latest_gap, historical_average = snapshot_gap_metrics(snapshot_orders)
         score, band = float(latest["risk_score"]), risk_band(float(latest["risk_score"]))
         intervention = ACTION_RULES.get(primary_feature, "Validate this signal before offering an incentive.")
         detail = {
             "id": str(customer_id), "riskScore": round(score, 4), "riskTier": band,
-            "lastPurchaseDays": round(float(valid_gaps.iloc[-1]), 1) if not valid_gaps.empty else 0.0,
+            "lastPurchaseDays": latest_gap,
             "lastPurchaseDate": f"Relative Day {int(latest['relative_day'])}",
-            "historicAvgGap": round(float(valid_gaps.mean()), 1) if not valid_gaps.empty else 0.0,
-            "orderVolume": len(orders_group), "primaryRiskDriver": primary, "protectiveFactor": protective,
+            "historicAvgGap": historical_average,
+            "orderVolume": len(snapshot_orders), "primaryRiskDriver": primary, "protectiveFactor": protective,
             "timelineHistory": [{"day": int(row.relative_day), "score": round(float(row.risk_score), 4)} for row in pred_group.itertuples()],
             "shapDrivers": drivers, "recommendedIntervention": intervention,
-            "insightReport": {"risk_summary": f"Customer {customer_id} is in the {band} Risk operational band with a model score of {score:.2%}. Risk bands are operational segmentation rules applied to the model score, not calibrated probabilities."},
-            "orderHistory": [{"orderNumber": int(row.order_number), "daysSincePrior": round(float(row.days_since_prior_order), 1) if pd.notna(row.days_since_prior_order) else None} for row in orders_group.itertuples()],
+            "insightReport": {"risk_summary": f"Customer {customer_id} is in the {band} operational review band with a model score of {score:.3f}. Risk bands are segmentation rules applied to the score, not calibrated probabilities."},
+            "orderHistory": [{"orderNumber": int(row.order_number), "daysSincePrior": round(float(row.days_since_prior_order), 1) if pd.notna(row.days_since_prior_order) else None} for row in snapshot_orders.itertuples()],
         }
         details[customer_id] = detail
         portfolio.append({"customer_id": customer_id, "score": round(score, 4), "risk_band": band, "top_driver": get_clean_feature_description(primary_feature), "latest_order_id": int(latest["order_id"]), "relative_day": int(latest["relative_day"]), "last_purchase_days": detail["lastPurchaseDays"], "historic_avg_gap": detail["historicAvgGap"], "order_volume": detail["orderVolume"]})

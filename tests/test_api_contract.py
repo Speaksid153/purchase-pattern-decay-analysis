@@ -107,8 +107,19 @@ class ApiContractTests(unittest.TestCase):
         high = self.get_json("/api/customers?page=1&pageSize=20&tier=High")
         self.assertEqual((high["total"], len(high["customers"])), (2, 2))
         self.assertTrue(all(customer["riskTier"] == "High" for customer in high["customers"]))
+        review = self.get_json("/api/customers?page=1&pageSize=20&tier=Review")
+        self.assertEqual((review["total"], len(review["customers"])), (3, 3))
+        self.assertTrue(all(customer["riskTier"] in {"High", "Medium"} for customer in review["customers"]))
         search = self.get_json("/api/customers?search=63581")
         self.assertEqual([customer["id"] for customer in search["customers"]], ["63581"])
+
+        ascending = self.get_json("/api/customers?page=1&pageSize=20&sortBy=score&sortDir=asc")
+        scores = [customer["riskScore"] for customer in ascending["customers"]]
+        self.assertEqual(scores, sorted(scores))
+
+        by_orders = self.get_json("/api/customers?page=1&pageSize=20&sortBy=orders&sortDir=desc")
+        order_counts = [customer["orderVolume"] for customer in by_orders["customers"]]
+        self.assertEqual(order_counts, sorted(order_counts, reverse=True))
 
     def test_customer_details_and_not_found(self):
         first = self.get_json("/api/customers/25369")
@@ -124,6 +135,10 @@ class ApiContractTests(unittest.TestCase):
             "/api/customers?page=5&pageSize=1",
             "/api/customers?pageSize=101",
             "/api/customers?tier=Critical",
+            "/api/customers?sortBy=unknown",
+            "/api/customers?sortDir=sideways",
+            "/api/customers?sortBy=unknown",
+            "/api/customers?sortDir=sideways",
         ):
             self.assert_http_error(path, 400)
         self.assert_http_error("/api/unknown", 404)

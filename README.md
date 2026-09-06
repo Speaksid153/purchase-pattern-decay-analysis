@@ -18,7 +18,7 @@ This project is an **equal-contribution collaboration** between [Siddharth R](ht
 
 ## 📖 Overview
 
-A deployable machine-learning case study combining an XGBoost scoring pipeline, SHAP explainability, a read-only Python API backed by precomputed SQLite caches, and a full React 19 + TypeScript dashboard with search, filtering, risk-band segmentation, and dark mode.
+A deployable machine-learning case study combining an XGBoost scoring pipeline, SHAP explainability, a read-only Python API backed by precomputed SQLite caches, and a full React 19 + TypeScript dashboard with search, filtering, operational-status segmentation, and dark mode.
 
 > ⚠️ **This project is deliberately not presented as a calibrated churn predictor.** The dataset has no global calendar dates, purchase gaps are capped at 30 days, and the score is not a probability. The defensible claim is narrower: purchase-rhythm decay can be ranked as an early operational warning signal.
 
@@ -78,15 +78,15 @@ Selected across two rolling user-lifecycle development folds, retrained on all d
 
 This is a measured improvement, not a breakthrough. More complex feature and weighting variants were tested and rejected when they failed to generalize across rolling folds.
 
-### Operational Risk Bands
+### Operational Status Bands
 
-> Bands support segmentation and intervention analysis. They are not calibrated probability thresholds.
+> Statuses support review ordering and intervention analysis. They are not calibrated probability thresholds.
 
-| Band | Score Range | Users (held-out cohort) |
+| Status | Score Range | Users (held-out cohort) |
 |------|-------------|------------------------|
-| 🔴 High | ≥ 0.70 | 295 |
-| 🟡 Medium | ≥ 0.45 and < 0.70 | 3,973 |
-| 🟢 Low | < 0.45 | 21,450 |
+| 🔴 Priority | ≥ 0.70 | 295 |
+| 🟡 Watch | ≥ 0.45 and < 0.70 | 3,973 |
+| 🟢 Stable | < 0.45 | 21,450 |
 | **Total** | | **25,718** |
 
 ![Global SHAP feature importance](reports/modeling/instacart/plots/shap_global_importance.png)
@@ -96,7 +96,7 @@ This is a measured improvement, not a breakthrough. More complex feature and wei
 ## 📦 What's Included
 
 **Dashboard (React 19 + TypeScript)**
-- Customer search, risk-band filtering, and pagination
+- Customer search, operational-status filtering, sorting, and pagination
 - Per-customer SHAP evidence and behavioral detail panel
 - Dark mode, responsive layout, and explicit API failure states
 
@@ -167,7 +167,7 @@ py scripts/verify_serving_cache.py
 `npm run check` runs TypeScript checking, the production build, and self-contained API-contract tests.
 
 The full cache verifier:
-- Compares all 25,718 served scores and risk bands against offline artifacts
+- Compares all 25,718 served scores and status bands against offline artifacts
 - Exercises sorting and filtering
 - Checks complete detail payloads
 - Confirms deployed metrics match expected values

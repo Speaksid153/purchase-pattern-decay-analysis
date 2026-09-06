@@ -8,6 +8,10 @@ Meg Risdal and Will Cukierski. *Market Basket Analysis*. Kaggle, 2017. https://w
 
 The raw dataset is not part of this repository. The root MIT License covers this project's original source code; it does not replace or modify terms attached to third-party data.
 
+## Instacart brand asset
+
+The Instacart Carrot logo is sourced from Instacart's official logo package. Instacart and the Carrot logo are trademarks of Maplebear Inc. This independent analytical project is not affiliated with or endorsed by Instacart.
+
 ## Dependencies
 
 Runtime and development dependencies remain under their respective upstream licenses. See `package-lock.json` and `requirements.txt` for the pinned dependency inventory.

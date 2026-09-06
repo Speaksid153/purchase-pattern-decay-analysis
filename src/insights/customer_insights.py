@@ -31,7 +31,7 @@ def generate_customer_insight_report(
     Does NOT modify prediction data or action rules.
     """
     score = float(latest_prediction["risk_score"])
-    score_pct_str = f"{score * 100:.2f}%"
+    score_str = f"{score:.3f}"
     tier = categorize_risk_level(score, HIGH_RISK_THRESHOLD, MEDIUM_RISK_THRESHOLD)
     order_count = len(customer_orders)
     relative_day = int(latest_prediction.get("relative_day", 0))
@@ -39,18 +39,18 @@ def generate_customer_insight_report(
     # 1. Risk Summary (2 decimal places precision)
     if tier == "High":
         risk_summary = (
-            f"Customer {customer_id} is classified in the **High Risk** tier with a predicted risk score of **{score_pct_str}** "
-            f"(operational threshold: $\\ge$ {HIGH_RISK_THRESHOLD * 100:.2f}%)."
+            f"Customer {customer_id} is in the **High operational review band** with a model score of **{score_str}** "
+            f"(operational threshold: $\\ge$ {HIGH_RISK_THRESHOLD:.2f})."
         )
     elif tier == "Medium":
         risk_summary = (
-            f"Customer {customer_id} is classified in the **Medium Risk** tier with a predicted risk score of **{score_pct_str}** "
-            f"(operational threshold: $\\ge$ {MEDIUM_RISK_THRESHOLD * 100:.2f}%)."
+            f"Customer {customer_id} is in the **Medium operational review band** with a model score of **{score_str}** "
+            f"(operational threshold: $\\ge$ {MEDIUM_RISK_THRESHOLD:.2f})."
         )
     else:
         risk_summary = (
-            f"Customer {customer_id} maintains a **Low Risk** classification with a predicted risk score of **{score_pct_str}** "
-            f"(below warning threshold of {MEDIUM_RISK_THRESHOLD * 100:.2f}%)."
+            f"Customer {customer_id} is in the **Low operational review band** with a model score of **{score_str}** "
+            f"(below the review threshold of {MEDIUM_RISK_THRESHOLD:.2f})."
         )
 
     # 2. Behavioral Interpretation (Why is this customer at risk / history)

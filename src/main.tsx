@@ -2,8 +2,8 @@ import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
-import './index.css';
-import './observation-card.css';
+import '@fontsource-variable/inter';
+import './redesign.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

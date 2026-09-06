@@ -1,4 +1,13 @@
 export type RiskTier = 'High' | 'Medium' | 'Low';
+export type CustomerFilter = 'Review' | 'All' | RiskTier;
+
+export interface CustomerResponse {
+  customers: Customer[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
 
 export interface Customer {
   id: string;
@@ -10,10 +19,12 @@ export interface Customer {
   orderVolume: number;
   primaryRiskDriver: {
     feature: string;
+    category?: string;
     shapValue?: number;
   };
   protectiveFactor: {
     feature: string;
+    category?: string;
     shapValue?: number;
   };
   timelineHistory: {

@@ -29,6 +29,21 @@ FEATURE_CATEGORIES: dict[str, str] = {
     "history_reliability_score": "History Reliability Support",
     "known_gap_count_feature": "History Depth",
     "behavior_orders_to_date": "Order Sequence Depth",
+    "historical_median_gap_days_feature": "Historical Cadence",
+    "previous_gap_days": "Recent Cadence",
+    "prior_avg_gap_days_feature": "Historical Cadence",
+    "trend_history_available": "History Reliability Support",
+    "item_count_prior_to_current_avg": "Basket Baseline",
+    "item_count_recent3_avg": "Recent Basket Size",
+    "reorder_ratio_prior_to_current_avg": "Reorder Baseline",
+    "reorder_ratio_recent3_avg": "Recent Reorder Habit",
+    "reorder_ratio_recent3_ratio_to_prior": "Reorder Habit Weakening",
+    "distinct_department_count_prior_to_current_avg": "Category Baseline",
+    "distinct_department_count_recent3_avg": "Recent Category Breadth",
+    "distinct_department_count_recent3_delta_from_prior": "Category Narrowing",
+    "distinct_aisle_count_prior_to_current_avg": "Aisle Baseline",
+    "distinct_aisle_count_recent3_avg": "Recent Aisle Breadth",
+    "distinct_aisle_count_recent3_delta_from_prior": "Aisle Diversity Narrowing",
 }
 
 FEATURE_DESCRIPTIONS: dict[str, str] = {
@@ -55,6 +70,21 @@ FEATURE_DESCRIPTIONS: dict[str, str] = {
     "history_reliability_score": "Established order history depth provides prediction support",
     "known_gap_count_feature": "Observed purchase gap history depth",
     "behavior_orders_to_date": "Total order sequence depth to date",
+    "historical_median_gap_days_feature": "Historical median purchase gap",
+    "previous_gap_days": "Previous inter-purchase gap",
+    "prior_avg_gap_days_feature": "Average purchase gap before the scored order",
+    "trend_history_available": "Sufficient recent history is available for trend features",
+    "item_count_prior_to_current_avg": "Historical average basket size",
+    "item_count_recent3_avg": "Average basket size across the latest three observed orders",
+    "reorder_ratio_prior_to_current_avg": "Historical repeat-item ratio",
+    "reorder_ratio_recent3_avg": "Recent repeat-item ratio",
+    "reorder_ratio_recent3_ratio_to_prior": "Recent repeat-item ratio relative to its historical baseline",
+    "distinct_department_count_prior_to_current_avg": "Historical average number of departments per order",
+    "distinct_department_count_recent3_avg": "Recent average number of departments per order",
+    "distinct_department_count_recent3_delta_from_prior": "Recent department breadth changed from its historical baseline",
+    "distinct_aisle_count_prior_to_current_avg": "Historical average number of aisles per order",
+    "distinct_aisle_count_recent3_avg": "Recent average number of aisles per order",
+    "distinct_aisle_count_recent3_delta_from_prior": "Recent aisle breadth changed from its historical baseline",
 }
 
 
