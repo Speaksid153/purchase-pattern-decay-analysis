@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import unittest
 
-import pandas as pd
+try:
+    import pandas as pd
+except ModuleNotFoundError:  # Keep the lightweight CI contract suite dependency-free.
+    pd = None
 
-from scripts.serving_cache_common import orders_through_snapshot, snapshot_gap_metrics
+if pd is not None:
+    from scripts.serving_cache_common import orders_through_snapshot, snapshot_gap_metrics
 
 
+@unittest.skipIf(pd is None, "requires the analytical pandas environment")
 class ServingCacheSemanticTests(unittest.TestCase):
     def test_orders_are_limited_to_scored_snapshot(self) -> None:
         orders = pd.DataFrame(
